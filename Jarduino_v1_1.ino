@@ -1,4 +1,3 @@
-
 //************************************************************************************/
 // Jarduino Aquarium Controller v.1.1 - release date: April 2012
 //   Written and Debugged by Jamie M. Jardin
@@ -41,32 +40,32 @@
 //   - The WaveMaker may cut the set amount of seconds by half
 //   - The level of automation may make you lazy
 //   - If you spot an error or bug, please let me know!
-//   - 
-//   - 
+//   -
+//   -
 //************************************************************************************/
 //
 // LEGAL DISCLAIMER:
 //   Jarduino Aquarium Controller v.1.1, Copyright 2011, 2012 Jamie M. Jardin.
-//   I'm providing this program as free software with the sole intent on furthering 
-//   DIY Aquarium Lighting, but WITHOUT ANY WARRANTY; without even the implied warranty 
-//   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. You may modify and/or use 
-//   it under the terms of the GNU General Public License as published by the Free 
-//   Software Foundation version 3 of the License, or (at your option) any later 
-//   version.  However if you intend on using the program (either in its entirety or any 
-//   part of it) in any way, shape, or form for PROFIT, you MUST contact me and obtain 
+//   I'm providing this program as free software with the sole intent on furthering
+//   DIY Aquarium Lighting, but WITHOUT ANY WARRANTY; without even the implied warranty
+//   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. You may modify and/or use
+//   it under the terms of the GNU General Public License as published by the Free
+//   Software Foundation version 3 of the License, or (at your option) any later
+//   version.  However if you intend on using the program (either in its entirety or any
+//   part of it) in any way, shape, or form for PROFIT, you MUST contact me and obtain
 //   my EXPRESS WRITTEN CONSENT (contact information is provided above).
 //   VIOLATORS WILL BE PROSECUTED TO THE FULLEST EXTENT OF THE LAW.
 //
 //************************************************************************************/
 //
 // IF YOU WANT SOME HELP, PLEASE READ ME!
-//   Feel free to make changes to suit your needs.  For you convenience, I’m listing the 
-//   line numbers in the sketch most commonly changed.  Some of these values will require 
-//   a change while other values can simply be modified according to user preference.  
-//   If you make changes to lines other than those listed below, know that it may render 
-//   the program inoperable or cause unpredictable behavior.  
+//   Feel free to make changes to suit your needs.  For you convenience, I’m listing the
+//   line numbers in the sketch most commonly changed.  Some of these values will require
+//   a change while other values can simply be modified according to user preference.
+//   If you make changes to lines other than those listed below, know that it may render
+//   the program inoperable or cause unpredictable behavior.
 //
-//   86, 87, 92, 93, 104-110, 113-116, 119-122, 125, 129-131, 136, 137, 155, 176, 207, 
+//   86, 87, 92, 93, 104-110, 113-116, 119-122, 125, 129-131, 136, 137, 155, 176, 207,
 //   209, 212, 234, 298-309, 313-324, 328-339, 343-354, 358-369, 373-384
 //
 //************************************************************************************/
@@ -88,7 +87,7 @@ boolean RECOM_RCD = true;            //For Mean Well drivers change "true" to "f
 boolean CLOCK_SCREENSAVER = true;    //For a Clock Screensaver "true" / Blank Screen "false"
 //You can turn the Screensaver ON/OFF in the pogram
 
-//TOUCH PANEL and ITDB02 MEGA SHIELD 
+//TOUCH PANEL and ITDB02 MEGA SHIELD
 //(Mega Shield utilizes pins 5V, 3V3, GND, 2-6, 20-41, & (50-53 for SD Card))
 ITDB02       myGLCD(38,39,40,41,ITDB32S);    //May need to add "ITDB32S" depending on LCD controller
 ITDB02_Touch myTouch(6,5,4,3,2);
@@ -125,15 +124,15 @@ const int autoFeeder = 50;           //Automatic Fish Feeder
 
 boolean checkTemp = false;
 // DS18B20 Temperature sensors plugged into pin 51 (Water, Hood, & Sump)
-OneWire OneWireBus(51);     //Choose a digital pin 
-// Pass our oneWire reference to Dallas Temperature. 
-DallasTemperature sensors(&OneWireBus);   
+OneWire OneWireBus(51);     //Choose a digital pin
+// Pass our oneWire reference to Dallas Temperature.
+DallasTemperature sensors(&OneWireBus);
 // Assign the addresses of temperature sensors.  Add/Change addresses as needed.
-DeviceAddress waterThermometer = { 
+DeviceAddress waterThermometer = {
   0x28, 0x5C, 0x56, 0x59, 0x03, 0x00, 0x00, 0xEB };
-DeviceAddress hoodThermometer = { 
+DeviceAddress hoodThermometer = {
   0x28, 0xC8, 0x4E, 0x59, 0x03, 0x00, 0x00, 0xC4 };
-DeviceAddress sumpThermometer = { 
+DeviceAddress sumpThermometer = {
   0x28, 0x72, 0x22, 0x37, 0x03, 0x00, 0x00, 0xB9 };
 
 float tempW = 0;                     //Water temperature values
@@ -163,20 +162,20 @@ float temp2beS;                      //Temporary Temperature Values
 float temp2beO;                      //Temporary Temperature Values
 float temp2beA;                      //Temporary Temperature Values
 int setTempScale = 0;                //Celsius=0 || Fahrenheit=1 (change in prog)
-String degC_F;                       //Used in the Conversion of Celsius to Fahrenheit 
+char degC_F[2];                       //Used in the Conversion of Celsius to Fahrenheit
 
 int setCalendarFormat = 0;           //DD/MM/YYYY=0 || Month DD, YYYY=1 (change in prog)
 int setTimeFormat = 0;               //24HR=0 || 12HR=1 (change in prog)
 int rtc[7], rtcSet[7];               //Clock arrays
 int rtcSet2, AM_PM, yTime;           //Setting clock stuff
-int timeDispH, timeDispM, 
-xTimeH, xTimeM10, xTimeM1, 
+int timeDispH, timeDispM,
+xTimeH, xTimeM10, xTimeM1,
 xTimeAMPM, xColon;
 byte data[56];
-String time, date, day; 
+char time[11], date[16], day[16];
 
 float LC = 29.53059;                 //1 Lunar Cycle = 29.53059 days
-String LP;                           //LP = Lunar Phase - variable used to print out Moon Phase
+char LP[16];                           //LP = Lunar Phase - variable used to print out Moon Phase
 double AG;
 int MI, tMI;                         //Maximum Illumination of Moon (User Defined/Set in Prog. -- Default = 0)
 int MoonLow = 43;                    //Highest Value (0-255) at which Led is Still OFF, or the Value
@@ -193,7 +192,7 @@ Waning_Gibbous[0xD24],
 Last_Quarter[0xD24],
 Waning_Crescent[0xD24];
 
-int dispScreen=0;                    //0-Main Screen, 1-Menu, 2-Clock Setup, 3-Temp Control, 
+int dispScreen=0;                    //0-Main Screen, 1-Menu, 2-Clock Setup, 3-Temp Control,
 //4-LED Test Options, 5-Test LED Arrays, 6-Test Individual
 //LED Colors, 7-Choose LED Color, 8-View Selected Color
 //Values, 9-Change Selected Color Array Values
@@ -214,7 +213,7 @@ int setScreenSaverTimer = (20)*12;   //how long in (minutes) before Screensaver 
 
 boolean SCREEN_RETURN = true;        //Auto Return to mainScreen() after so long of inactivity
 int returnTimer = 0;                 //counter for Screen Return
-int setReturnTimer = 
+int setReturnTimer =
 setScreenSaverTimer * .75;       //Will return to main screen after 75% of the amount of
 //time it takes before the screensaver turns on
 
@@ -228,16 +227,16 @@ int PumpTstate = LOW;                //Used to set the Top Powerhead ON or OFF
 int PumpBstate = LOW;                //Used to set the Bottom Powerhead ON or OFF
 
 int WAVE, Pump1m, Pump1s, Pump2m,    //EEPROM vars
-Pump2s, Synch, OnForTm, OnForTs, 
+Pump2s, Synch, OnForTm, OnForTs,
 OffForTm, OffForTs;
 int MODE = WAVE;
 int MIN1=0, SEC1=0, MIN2=0, SEC2=0,  //Used in the Wavemaker viewWaveTimes()
-minY1, minY2;    
+minY1, minY2;
 int Min1=0, Sec1=0, Min2=0, Sec2=0;  //Used in the Wavemaker viewWaveTimesPage() & wave+/-
 int min1X=91, sec1X=237,             //Used in the Wavemaker waveModePlusMinus()
 min2X=91, sec2X=237,
 tTime1=0, tTime2=0;
-int WaveCorrector = 2;               //Fix for halving of wave seconds (Change to "1" if 
+int WaveCorrector = 2;               //Fix for halving of wave seconds (Change to "1" if
 //your wave seconds are doubled)
 
 long previousMillisCt = 0;           //stores the last update for the Countdown Timer
@@ -260,7 +259,7 @@ rled_out, uvled_out, sled_out,
 moonled_out, colorled_out;
 
 int COLOR=0, WHITE=1, BLUE=2,        //Used to Determine View/Change Color LED Values
-ROYAL=3, RED=4, ULTRA=5, 
+ROYAL=3, RED=4, ULTRA=5,
 SUMP=6, MOON=7;
 
 boolean colorLEDtest = false;        //To test individual color LEDs
@@ -274,8 +273,8 @@ int bcol_out, wcol_out, rbcol_out,   //Current LED output values for Test Ind. C
 rcol_out, uvcol_out, scol_out,
 mooncol_out;
 int x1Bar=0, x2Bar=0,                //Used in LED Output Chart on Test Ind. LEDs Screen
-xValue=0, yValue=0, 
-LEDlevel, yBar; 
+xValue=0, yValue=0,
+LEDlevel, yBar;
 
 int feedTime;
 int FEEDTime1, FEEDTime2,
@@ -286,7 +285,7 @@ feedFish2H, feedFish2M,
 feedFish3H, feedFish3M,
 feedFish4H, feedFish4M;
 
-int setAutoStop = 2;                 //ON=1 || OFF=2 (change in prog)    
+int setAutoStop = 2;                 //ON=1 || OFF=2 (change in prog)
 int fiveTillBackOn1, fiveTillBackOn2,
 fiveTillBackOn3, fiveTillBackOn4;
 boolean FeedWaveCtrl_1 = false;
@@ -313,7 +312,7 @@ byte sled[96] = {
   0, 0, 0, 0, 0, 0, 0, 0,                   //18 - 19
   75, 85, 95, 105, 140, 140, 140, 140,      //20 - 21
   175, 175, 175, 175, 190, 192, 195, 197    //22 - 23
-};  
+};
 //REGULAR BLUE Dimming Values
 byte bled[96] = {
   0, 0, 0, 0, 0, 0, 0, 0,                   //0 - 1
@@ -328,7 +327,7 @@ byte bled[96] = {
   170, 165, 160, 160, 160, 150, 145, 140,   //18 - 19
   135, 130, 125, 115, 100, 75, 60, 30,      //20 - 21
   30, 30, 28, 28, 0, 0, 0, 0                //22 - 23
-};  
+};
 //WHITE Dimming Values (White LED array in RAM)
 byte wled[96] = {
   0, 0, 0, 0, 0, 0, 0, 0,                   //0 - 1
@@ -358,7 +357,7 @@ byte rbled[96] = {
   155, 150, 145, 145, 145, 135, 130, 125,   //18 - 19
   120, 115, 110, 110, 100, 75, 65, 50,      //20 - 21
   40, 35, 33, 28, 0, 0, 0, 0                //22 - 23
-};  
+};
 //RED Dimming Values
 byte rled[96] = {
   0, 0, 0, 0, 0, 0, 0, 0,                   //0 - 1
@@ -372,8 +371,8 @@ byte rled[96] = {
   0, 0, 0, 0, 0, 0, 0, 0,                   //16 - 17
   0, 0, 0, 0, 0, 0, 0, 0,                   //18 - 19
   0, 0, 0, 0, 0, 0, 0, 0,                   //20 - 21
-  0, 0, 0, 0, 0, 0, 0, 0    
-};  
+  0, 0, 0, 0, 0, 0, 0, 0
+};
 //ULTRA VIOLET (UV) Dimming Values
 byte uvled[96] = {
   0, 0, 0, 0, 0, 0, 0, 0,                   //0 - 1
@@ -387,7 +386,7 @@ byte uvled[96] = {
   25, 20, 0, 0, 0, 0, 0, 0,                 //16 - 17
   0, 0, 0, 0, 0, 0, 0, 0,                   //18 - 19
   0, 0, 0, 0, 0, 0, 0, 0,                   //20 - 21
-  0, 0, 0, 0, 0, 0, 0, 0    
+  0, 0, 0, 0, 0, 0, 0, 0
 };
 byte tled[96];     //Temporary Array to Hold changed LED Values
 
@@ -526,28 +525,28 @@ struct config_t
   int tempFoff;
   int tempalarm;
   int tempFalarm;
-} 
+}
 tempSettings;
 
 struct config_m
 {
   int MI_t;
-} 
+}
 MIsettings;
 
 struct config_w
 {
   int waveMode;
   int altPump1m;
-  int altPump1s;  
+  int altPump1s;
   int altPump2m;
   int altPump2s;
   int synchMode;
   int synchPumpOnM;
-  int synchPumpOnS; 
-  int synchPumpOffM;  
+  int synchPumpOnS;
+  int synchPumpOffM;
   int synchPumpOffS;
-} 
+}
 WAVEsettings;
 
 struct config_g
@@ -555,9 +554,9 @@ struct config_g
   int calendarFormat;
   int timeFormat;
   int tempScale;
-  int SCREENsaver;  
+  int SCREENsaver;
   int autoStop;
-} 
+}
 GENERALsettings;
 
 struct config_f
@@ -573,22 +572,22 @@ struct config_f
   int feedTime1;
   int feedTime2;
   int feedTime3;
-  int feedTime4;  
-} 
+  int feedTime4;
+}
 FEEDERsettings;
 
 void SaveLEDToEEPROM()
 {
   EEPROM.write(0, 123);         //to determine if data available in EEPROM
-  for (int i=1; i<97; i++)  
+  for (int i=1; i<97; i++)
   {
     EEPROM.write(i+(96*0), wled[i]);
     EEPROM.write(i+(96*1), bled[i]);
     EEPROM.write(i+(96*2), rbled[i]);
     EEPROM.write(i+(96*3), rled[i]);
     EEPROM.write(i+(96*4), sled[i]);
-    EEPROM.write(i+(96*5), uvled[i]);    
-  } 
+    EEPROM.write(i+(96*5), uvled[i]);
+  }
 }
 
 void SaveMoonLEDToEEPROM()
@@ -601,23 +600,23 @@ void SaveWaveToEEPROM()
 {
   WAVEsettings.waveMode = int(WAVE);
   WAVEsettings.altPump1m = int(Pump1m);
-  WAVEsettings.altPump1s = int(Pump1s);  
+  WAVEsettings.altPump1s = int(Pump1s);
   WAVEsettings.altPump2m = int(Pump2m);
-  WAVEsettings.altPump2s = int(Pump2s);  
+  WAVEsettings.altPump2s = int(Pump2s);
   WAVEsettings.synchMode = int(Synch);
   WAVEsettings.synchPumpOnM = int(OnForTm);
-  WAVEsettings.synchPumpOnS = int(OnForTs);  
+  WAVEsettings.synchPumpOnS = int(OnForTs);
   WAVEsettings.synchPumpOffM = int(OffForTm);
-  WAVEsettings.synchPumpOffS = int(OffForTs);  
+  WAVEsettings.synchPumpOffS = int(OffForTs);
   EEPROM_writeAnything(620, WAVEsettings);
 }
 
 void SaveTempToEEPROM()
 {
   tempSettings.tempset = int(setTempC*10);
-  tempSettings.tempFset = int(setTempF*10);  
+  tempSettings.tempFset = int(setTempF*10);
   tempSettings.tempoff = int(offTempC*10);
-  tempSettings.tempFoff = int(offTempF*10);  
+  tempSettings.tempFoff = int(offTempF*10);
   tempSettings.tempalarm = int(alarmTempC*10);
   tempSettings.tempFalarm = int(alarmTempF*10);
   EEPROM_writeAnything(640, tempSettings);
@@ -636,17 +635,17 @@ void SaveGenSetsToEEPROM()
 void SaveFeedTimesToEEPROM()
 {
   FEEDERsettings.feedFish1h = int(feedFish1H);
-  FEEDERsettings.feedFish1m = int(feedFish1M);  
+  FEEDERsettings.feedFish1m = int(feedFish1M);
   FEEDERsettings.feedFish2h = int(feedFish2H);
-  FEEDERsettings.feedFish2m = int(feedFish2M);  
+  FEEDERsettings.feedFish2m = int(feedFish2M);
   FEEDERsettings.feedFish3h = int(feedFish3H);
-  FEEDERsettings.feedFish3m = int(feedFish3M);  
+  FEEDERsettings.feedFish3m = int(feedFish3M);
   FEEDERsettings.feedFish4h = int(feedFish4H);
   FEEDERsettings.feedFish4m = int(feedFish4M);
-  FEEDERsettings.feedTime1 = int(FEEDTime1);  
-  FEEDERsettings.feedTime2 = int(FEEDTime2);  
-  FEEDERsettings.feedTime3 = int(FEEDTime3);  
-  FEEDERsettings.feedTime4 = int(FEEDTime4);    
+  FEEDERsettings.feedTime1 = int(FEEDTime1);
+  FEEDERsettings.feedTime2 = int(FEEDTime2);
+  FEEDERsettings.feedTime3 = int(FEEDTime3);
+  FEEDERsettings.feedTime4 = int(FEEDTime4);
   EEPROM_writeAnything(680, FEEDERsettings);
 }
 
@@ -662,14 +661,14 @@ void ReadFromEEPROM()
       rbled[i] = EEPROM.read(i+(96*2));
       rled[i] = EEPROM.read(i+(96*3));
       sled[i] = EEPROM.read(i+(96*4));
-      uvled[i] = EEPROM.read(i+(96*5));   
-    }  
+      uvled[i] = EEPROM.read(i+(96*5));
+    }
   }
 
-  EEPROM_readAnything(600, MIsettings);  
+  EEPROM_readAnything(600, MIsettings);
   MI = MIsettings.MI_t;
 
-  EEPROM_readAnything(620, WAVEsettings);  
+  EEPROM_readAnything(620, WAVEsettings);
   WAVE = WAVEsettings.waveMode;
   Pump1m = WAVEsettings.altPump1m;
   Pump1s = WAVEsettings.altPump1s;
@@ -681,15 +680,15 @@ void ReadFromEEPROM()
   OffForTm = WAVEsettings.synchPumpOffM;
   OffForTs = WAVEsettings.synchPumpOffS;
 
-  EEPROM_readAnything(640, tempSettings);  
+  EEPROM_readAnything(640, tempSettings);
   setTempC = tempSettings.tempset;
   setTempC /=10;
   setTempF = tempSettings.tempFset;
-  setTempF /=10;  
+  setTempF /=10;
   offTempC = tempSettings.tempoff;
   offTempC /=10;
   offTempF = tempSettings.tempFoff;
-  offTempF /=10;  
+  offTempF /=10;
   alarmTempC = tempSettings.tempalarm;
   alarmTempC /= 10;
   alarmTempF = tempSettings.tempFalarm;
@@ -699,22 +698,22 @@ void ReadFromEEPROM()
   setCalendarFormat = GENERALsettings.calendarFormat;
   setTimeFormat = GENERALsettings.timeFormat;
   setTempScale = GENERALsettings.tempScale;
-  setScreensaver = GENERALsettings.SCREENsaver;  
+  setScreensaver = GENERALsettings.SCREENsaver;
   setAutoStop = GENERALsettings.autoStop;
 
-  EEPROM_readAnything(680, FEEDERsettings);  
+  EEPROM_readAnything(680, FEEDERsettings);
   feedFish1H = FEEDERsettings.feedFish1h;
-  feedFish1M = FEEDERsettings.feedFish1m;  
+  feedFish1M = FEEDERsettings.feedFish1m;
   feedFish2H = FEEDERsettings.feedFish2h;
-  feedFish2M = FEEDERsettings.feedFish2m;  
+  feedFish2M = FEEDERsettings.feedFish2m;
   feedFish3H = FEEDERsettings.feedFish3h;
-  feedFish3M = FEEDERsettings.feedFish3m;  
+  feedFish3M = FEEDERsettings.feedFish3m;
   feedFish4H = FEEDERsettings.feedFish4h;
   feedFish4M = FEEDERsettings.feedFish4m;
   FEEDTime1 = FEEDERsettings.feedTime1;
   FEEDTime2 = FEEDERsettings.feedTime2;
   FEEDTime3 = FEEDERsettings.feedTime3;
-  FEEDTime4 = FEEDERsettings.feedTime4;  
+  FEEDTime4 = FEEDERsettings.feedTime4;
 }
 /***************************** END OF EEPROM FUNCTIONS ********************************/
 
@@ -724,7 +723,7 @@ void SaveRTC()
 {
   int year=rtcSet[6] - 2000;
 
-  RTC.stop();            //RTC clock setup 
+  RTC.stop();            //RTC clock setup
   RTC.set(DS1307_SEC,1);
   RTC.set(DS1307_MIN,rtcSet[1]);
   RTC.set(DS1307_HR,rtcSet[2]);
@@ -736,9 +735,9 @@ void SaveRTC()
   RTC.start();
   delay(10);
   for(int i=0; i<56; i++)
-  { 
-    RTC.set_sram_byte(65,i);   
-  } 
+  {
+    RTC.set_sram_byte(65,i);
+  }
   delay(50);
 }
 /********************************* END OF RTC FUNCTIONS *******************************/
@@ -747,7 +746,7 @@ void SaveRTC()
 /********************************** TIME AND DATE BAR **********************************/
 void TimeDateBar(boolean refreshAll=false)
 {
-  String oldVal, rtc1, rtc2, ampm, month;  
+  char oldVal[11], rtc1[3], rtc2[3], ampm[4], month[4];
     Serial.print("Time: ");
         Serial.print(rtc[1]);
         Serial.print(" - ");
@@ -761,109 +760,117 @@ void TimeDateBar(boolean refreshAll=false)
         Serial.print(" - ");
         Serial.print(rtc[6]);
         Serial.println(" - ");
-       
-  if ((rtc[1]>=0) && (rtc[1]<=9)) 
-  { 
-    rtc1= '0' + String(rtc[1]);
-  }               //adds 0 to minutes 
-  else { 
-    rtc1= String(rtc[1]); 
+
+  if ((rtc[1]>=0) && (rtc[1]<=9))
+  {
+	  snprintf(rtc1,3,"%i%i",0,rtc[1]);
+//    rtc1= '0' + String(rtc[1]);
+  }               //adds 0 to minutes
+  else {
+	  snprintf(rtc1,3,"%i",rtc[1]);
+//    rtc1= String(rtc[1]);
   }
 
-  if (setTimeFormat==1) 
+  if (setTimeFormat==1)
   {
-    if (rtc[2]== 0) { 
-      rtc2=String( 12); 
+    if (rtc[2]== 0) {
+    	snprintf(rtc2,3,"%i",12);
+//      rtc2=String( 12);
     }                //12 HR Format
     else {
-      if (rtc[2]>12) { 
-        rtc2= String( rtc[2]-12); 
+      if (rtc[2]>12) {
+    	  snprintf(rtc2,3,"%i",rtc[2]-12);
+//        rtc2= String( rtc[2]-12);
       }
-      else { 
-        rtc2= String(rtc[2]); 
+      else {
+    	  snprintf(rtc2,3,"%i",rtc[2]);
+//        rtc2= String(rtc[2]);
       }
     }
-  } 
+  }
 
-  if(rtc[2] < 12){ 
-    ampm= " AM  "; 
+  if(rtc[2] < 12){
+    ampm= " AM  ";
   }              //Adding the AM/PM sufffix
-  else { 
-    ampm= " PM  "; 
+  else {
+    ampm= " PM  ";
   }
 
   oldVal = time;                                 //refresh time if different
-  if (setTimeFormat==1) 
-  { 
-    time= rtc2 + ':' + rtc1 + ampm;
-  } 
+  if (setTimeFormat==1)
+  {
+	  snprintf (time,11,"%s:%s%s",rtc2,rtc1, ampm);
+//    time= rtc2 + ':' + rtc1 + ampm;
+  }
   else {
-    time= " " + String(rtc[2]) + ':' + rtc1 +"      ";
+	  snprintf (time,11," :%i:%s      ",rtc[2],rtc1);
+//    time= " " + String(rtc[2]) + ':' + rtc1 +"      ";
   }
   if ((oldVal!=time) || refreshAll)
   {
-    char bufferT[9];
-    time.toCharArray(bufferT, 9);               //String to Char array 
+    //char bufferT[9];
+  //  time.toCharArray(bufferT, 9);               //String to Char array
     setFont(SMALL, 255, 255, 0, 64, 64, 64);
-    myGLCD.print(bufferT, 215, 227);            //Display time
+    myGLCD.print(time, 215, 227);            //Display time
   }
 
-  if (rtc[5]==1)  { 
-    month= "JAN "; 
+  if (rtc[5]==1)  {
+    month= "JAN ";
   }             //Convert the month to its name
-  if (rtc[5]==2)  { 
-    month= "FEB "; 
+  if (rtc[5]==2)  {
+    month= "FEB ";
   }
-  if (rtc[5]==3)  { 
-    month= "MAR "; 
+  if (rtc[5]==3)  {
+    month= "MAR ";
   }
-  if (rtc[5]==4)  { 
-    month= "APR "; 
+  if (rtc[5]==4)  {
+    month= "APR ";
   }
-  if (rtc[5]==5)  { 
-    month= "MAY "; 
+  if (rtc[5]==5)  {
+    month= "MAY ";
   }
-  if (rtc[5]==6)  { 
-    month= "JUN "; 
+  if (rtc[5]==6)  {
+    month= "JUN ";
   }
-  if (rtc[5]==7)  { 
-    month= "JLY "; 
+  if (rtc[5]==7)  {
+    month= "JLY ";
   }
-  if (rtc[5]==8)  { 
-    month= "AUG "; 
+  if (rtc[5]==8)  {
+    month= "AUG ";
   }
-  if (rtc[5]==9)  { 
-    month= "SEP "; 
+  if (rtc[5]==9)  {
+    month= "SEP ";
   }
-  if (rtc[5]==10) { 
-    month= "OCT "; 
+  if (rtc[5]==10) {
+    month= "OCT ";
   }
-  if (rtc[5]==11) { 
-    month= "NOV "; 
+  if (rtc[5]==11) {
+    month= "NOV ";
   }
-  if (rtc[5]==12) { 
-    month= "DEC "; 
+  if (rtc[5]==12) {
+    month= "DEC ";
   }
 
   oldVal = date;                                 //refresh date if different
-  date.reserve(24);
+//  date.reserve(24);
   if (setCalendarFormat==0)
-  { 
-   
-    date= "  " + String(rtc[4]) + "/" + String(rtc[5]) + "/" + String(rtc[6]) + "   ";
-   
+  {
+	  snprintf (date,15,"  %i/%i/%i   ",rtc[4],rtc[5],rtc[6]);
+//    date= "  " + String(rtc[4]) + "/" + String(rtc[5]) + "/" + String(rtc[6]) + "   ";
+
   }
   else
-  { 
+  {
         Serial.println("Calendar 1");
-    date= "  " + month + String(rtc[4]) + ',' + ' ' + String(rtc[6]);
+        snprintf (date,14,"  %s%i, %i",month,rtc[4], rtc[6]);
+//    date= "  " + month + String(rtc[4]) + ',' + ' ' + String(rtc[6]);
   }
   if ((oldVal!=date) || refreshAll)
   {
     char bufferD[15];
-    date.toCharArray(bufferD, 15);              //String to Char array
+//    date.toCharArray(bufferD, 15);              //String to Char array
     setFont(SMALL, 255, 255, 0, 64, 64, 64);
-    myGLCD.print(bufferD, 20, 227);             //Display date  
+    myGLCD.print(date, 20, 227);             //Display date
   }
 }
 /****************************** END OF TIME AND DATE BAR ******************************/
@@ -877,9 +884,9 @@ void LED_levels_output()
 
   if (min_cnt>=1440) {
     min_cnt=1;
-  }   // 24 hours of minutes 
+  }   // 24 hours of minutes
   sector = min_cnt/15;              // divided by gives sector -- 15 minute
-  sstep = min_cnt%15;               // remainder gives add on to sector value 
+  sstep = min_cnt%15;               // remainder gives add on to sector value
 
   t1 =sector;
   if (t1==95) {
@@ -890,19 +897,19 @@ void LED_levels_output()
   }
 
 
-  if (colorLEDtest) 
+  if (colorLEDtest)
   {
-    sled_out = scol_out; 
-    rled_out = rcol_out; 
-    wled_out = wcol_out; 
-    bled_out = bcol_out; 
-    rbled_out = rbcol_out; 
-    uvled_out = uvcol_out; 
+    sled_out = scol_out;
+    rled_out = rcol_out;
+    wled_out = wcol_out;
+    bled_out = bcol_out;
+    rbled_out = rbcol_out;
+    uvled_out = uvcol_out;
     moonled_out = mooncol_out;
-  } 
-  else 
+  }
+  else
   {
-    if (sstep==0) 
+    if (sstep==0)
     {
       sled_out = sled[t1];
       bled_out = bled[t1];
@@ -910,8 +917,8 @@ void LED_levels_output()
       rbled_out = rbled[t1];
       rled_out = rled[t1];
       uvled_out = uvled[t1];
-    } 
-    else 
+    }
+    else
     {
       sled_out = check(&sled[t1], &sled[t2], sstep);
       bled_out = check(&bled[t1], &bled[t2], sstep);
@@ -919,9 +926,9 @@ void LED_levels_output()
       rbled_out = check(&rbled[t1], &rbled[t2], sstep);
       rled_out = check(&rled[t1], &rled[t2], sstep);
       uvled_out = check(&uvled[t1], &uvled[t2], sstep);
-    }  
+    }
     float lunarCycle = moonPhase(rtc[6], rtc[5], rtc[4]); //get a value for the lunar cycle
-    moonled_out = MoonLow *(1 - lunarCycle) +            
+    moonled_out = MoonLow *(1 - lunarCycle) +
       MI * lunarCycle + 0.5;                  //MaximumIllumination * % of Full Moon (0-100)
   }
 
@@ -933,14 +940,14 @@ void LED_levels_output()
     r_out = rled_out;
     uv_out = uvled_out;
     moon_out = moonled_out;
-  } 
+  }
   else {
     s_out = 255 - sled_out;
     b_out = 255 - bled_out;
     w_out = 255 - wled_out;
     rb_out = 255 - rbled_out;
     r_out = 255 - rled_out;
-    uv_out = 255 - uvled_out; 
+    uv_out = 255 - uvled_out;
     moon_out = 255 - moonled_out;
   }
 
@@ -949,7 +956,7 @@ void LED_levels_output()
   analogWrite(ledPinWhite, w_out);
   analogWrite(ledPinRoyBlue, rb_out);
   analogWrite(ledPinRed, r_out);
-  analogWrite(ledPinUV, uv_out); 
+  analogWrite(ledPinUV, uv_out);
   analogWrite(ledPinMoon, moon_out);
 }
 
@@ -962,16 +969,16 @@ int check( byte *pt1, byte *pt2, int lstep)
     result = *pt1;
   }     // No change
   else if (*pt1<*pt2)                //Increasing brightness
-  { 
+  {
     fresult = ((float(*pt2-*pt1)/15.0) * float(lstep))+float(*pt1);
     result = int(fresult);
   }
   //Decreasing brightness
   else {
     fresult = -((float(*pt1-*pt2)/15.0) * float(lstep))+float(*pt1);
-    result = int(fresult);                     
-  } 
-  return result;  
+    result = int(fresult);
+  }
+  return result;
 }
 /********************************* END OF LED LEVELS **********************************/
 
@@ -981,17 +988,17 @@ void wave_output()
 {
   unsigned long currentMillis = millis();
 
-  if (WAVE==1)                         //Alternating Mode         
+  if (WAVE==1)                         //Alternating Mode
   {
     if (waveMakerTest==true)
-    { 
+    {
       wPump1 = ((Min1*60)+Sec1*WaveCorrector);
       wPump1 = wPump1*1000;
       wPump2 = ((Min2*60)+Sec2*WaveCorrector);
       wPump2 = wPump2*1000;
-    } 
+    }
     else
-    { 
+    {
       wPump1 = ((Pump1m*60)+Pump1s*WaveCorrector);
       wPump1 = wPump1*1000;
       wPump2 = ((Pump2m*60)+Pump2s*WaveCorrector);
@@ -1002,20 +1009,20 @@ void wave_output()
     {
       previousMillisWave = currentMillis;
 
-      if (wPump1==wPump2) { 
+      if (wPump1==wPump2) {
         wPump2 = wPump2+1;
       }
 
-      if (intervalAlt==wPump1)      
-      { 
+      if (intervalAlt==wPump1)
+      {
         intervalAlt=wPump2;
-        PumpTstate = LOW; 
+        PumpTstate = LOW;
         PumpBstate = HIGH;
       }
-      else 
-      { 
+      else
+      {
         intervalAlt=wPump1;
-        PumpTstate = HIGH; 
+        PumpTstate = HIGH;
         PumpBstate = LOW;
       }
     }
@@ -1024,20 +1031,20 @@ void wave_output()
   {
     PumpTstate = HIGH;
     PumpBstate = HIGH;
-  } 
-  else    
+  }
+  else
 
     if ((WAVE==2) && (Synch==2))         //Synchronous - Pulsating
   {
     if (waveMakerTest==true)
-    { 
+    {
       wOnForT = ((Min1*60)+Sec1*WaveCorrector);
       wOnForT = wOnForT*1000;
       wOffForT = ((Min2*60)+Sec2*WaveCorrector);
       wOffForT = wOffForT*1000;
-    } 
+    }
     else
-    {  
+    {
       wOnForT = (OnForTm*60)+OnForTs*WaveCorrector;
       wOnForT = wOnForT*1000;
       wOffForT = (OffForTm*60)+OffForTs*WaveCorrector;
@@ -1048,20 +1055,20 @@ void wave_output()
     {
       previousMillisWave = currentMillis;
 
-      if (wOnForT==wOffForT) { 
+      if (wOnForT==wOffForT) {
         wOffForT = wOffForT+1;
-      }        
+      }
 
-      if (intervalSynch==wOnForT) 
-      { 
+      if (intervalSynch==wOnForT)
+      {
         intervalSynch=wOffForT;
-        PumpTstate = LOW; 
+        PumpTstate = LOW;
         PumpBstate = LOW;
       }
-      else 
-      { 
+      else
+      {
         intervalSynch=wOnForT;
-        PumpTstate = HIGH; 
+        PumpTstate = HIGH;
         PumpBstate = HIGH;
       }
     }
@@ -1074,9 +1081,9 @@ void wave_output()
 
 /******************************** TEMPERATURE FUNCTIONS *******************************/
 void checkTempC()
-{ 
+{
   if (checkTemp){
-    sensors.requestTemperatures();   // call sensors.requestTemperatures() to issue a global 
+    sensors.requestTemperatures();   // call sensors.requestTemperatures() to issue a global
     // temperature request to all devices on the bus
     tempW = (sensors.getTempC(waterThermometer));  //read water temperature
     tempH = (sensors.getTempC(hoodThermometer));   //read hood's heatsink temperature
@@ -1091,7 +1098,7 @@ void checkTempC()
       tempCoolflag=false;
       tempHeatflag=false;
       digitalWrite(tempHeatPin, LOW);
-      digitalWrite(tempChillPin, LOW);   
+      digitalWrite(tempChillPin, LOW);
     }
     if (offTempC>0)
     {
@@ -1117,7 +1124,7 @@ void checkTempC()
           previousMillisAlarm = cMillis;
           digitalWrite(tempAlarmPin, HIGH);
           delay(1000);
-          digitalWrite(tempAlarmPin, LOW);      
+          digitalWrite(tempAlarmPin, LOW);
         }
       }
     }
@@ -1125,38 +1132,38 @@ void checkTempC()
     //Fan Controller for Hood
     HoodTempInterval = (tempH - TempToBeginHoodFanInDegC);   //Sets the interval to start from 0
     HoodFanSpeedIncrease = HoodTempInterval*0.1;   //Fan's speed increases 10% every degree over set temperature
-    digitalWrite(HoodFansTranzPin, HIGH);  
+    digitalWrite(HoodFansTranzPin, HIGH);
     if (tempH < TempToBeginHoodFanInDegC)          //If Temp's less than defined value, leave fan off
-    { 
+    {
       HoodPWM = 0;
       digitalWrite(HoodFansTranzPin, LOW);
     }
     if ((tempH  >= TempToBeginHoodFanInDegC) && (HoodFanSpeedIncrease < 1))   //For every degree over defined value, increase by 10%
-    { 
+    {
       HoodPWM = FanOn + HoodFanSpeedIncrease;
     }
-    if (HoodFanSpeedIncrease >= 1)                 //If the temperature is 10 or more degrees C higher than user 
-    { 
+    if (HoodFanSpeedIncrease >= 1)                 //If the temperature is 10 or more degrees C higher than user
+    {
       HoodPWM = 1;
     }                              //defined value to start, leave it at 100%
 
     //Fan Controller for Sump
     SumpTempInterval = (tempS - TempToBeginSumpFanInDegC);   //Sets the interval to start from 0
     SumpFanSpeedIncrease = SumpTempInterval*0.1;   //Fan's speed increases 10% every degree over set temperature
-    digitalWrite(SumpFanTranzPin, HIGH);  
+    digitalWrite(SumpFanTranzPin, HIGH);
     if (tempS < TempToBeginSumpFanInDegC)          //If Temp's less than defined value, leave fan off
-    { 
+    {
       SumpPWM = 0;
       digitalWrite(SumpFanTranzPin, LOW);
     }
     if ((tempS  >= TempToBeginSumpFanInDegC) && (SumpFanSpeedIncrease < 1))   //For every degree over defined value, increase by 10%
-    { 
+    {
       SumpPWM = FanOn + SumpFanSpeedIncrease;
     }
-    if (SumpFanSpeedIncrease >= 1)                 //If the temperature is 10 or more degrees C higher than user 
-    { 
+    if (SumpFanSpeedIncrease >= 1)                 //If the temperature is 10 or more degrees C higher than user
+    {
       SumpPWM = 1;
-    }                              //defined value to start, leave it at 100%   
+    }                              //defined value to start, leave it at 100%
   }
 }
 /*************************** END OF TEMPERATURE FUNCTIONS *****************************/
@@ -1164,95 +1171,95 @@ void checkTempC()
 
 /******************************* LUNAR PHASE FUNCTION *********************************/
 float moonPhase(int moonYear, int moonMonth, int moonDay)
-{ 
+{
   float phase;
-  double IP; 
-  long YY, MM, K1, K2, K3, JulianDay; 
-  YY = moonYear - floor((12 - moonMonth) / 10); 
+  double IP;
+  long YY, MM, K1, K2, K3, JulianDay;
+  YY = moonYear - floor((12 - moonMonth) / 10);
   MM = moonMonth + 9;
   if (MM >= 12)
-  { 
-    MM = MM - 12; 
+  {
+    MM = MM - 12;
   }
   K1 = floor(365.25 * (YY + 4712));
   K2 = floor(30.6 * MM + 0.5);
   K3 = floor(floor((YY / 100) + 49) * 0.75) - 38;
   JulianDay = K1 + K2 + moonDay + 59;
   if (JulianDay > 2299160)
-  { 
-    JulianDay = JulianDay - K3; 
+  {
+    JulianDay = JulianDay - K3;
   }
   IP = MyNormalize((JulianDay - 2451550.1) / LC);
   AG = IP*LC;
-  phase = 0; 
+  phase = 0;
 
   //Determine the Moon Illumination %
   if ((AG >= 0) && (AG <= LC/2))             //FROM New Moon 0% TO Full Moon 100%
-  { 
-    phase = (2*AG)/LC; 
+  {
+    phase = (2*AG)/LC;
   }
   if ((AG > LC/2) && (AG <= LC))             //FROM Full Moon 100% TO New Moon 0%
-  { 
-    phase = 2*(LC-AG)/LC; 
+  {
+    phase = 2*(LC-AG)/LC;
   }
 
   //Determine the Lunar Phase
   if ((AG >= 0) && (AG <= 1.85))             //New Moon; ~0-12.5% illuminated
-  { 
-    LP = "    New Moon   "; 
-    MoonPic = New_Moon; 
+  {
+    LP = "    New Moon   ";
+    MoonPic = New_Moon;
   }
   if ((AG > 1.85) && (AG <= 5.54))           //New Crescent; ~12.5-37.5% illuminated
-  { 
+  {
     LP = "Waxing Crescent";
-    MoonPic = Waxing_Crescent; 
+    MoonPic = Waxing_Crescent;
   }
   if ((AG > 5.54) && (AG <= 9.23))           //First Quarter; ~37.5-62.5% illuminated
-  { 
+  {
     LP = " First Quarter ";
-    MoonPic = First_Quarter; 
+    MoonPic = First_Quarter;
   }
   if ((AG > 9.23) && (AG <= 12.92))          //Waxing Gibbous; ~62.5-87.5% illuminated
-  { 
+  {
     LP = "Waxing Gibbous ";
-    MoonPic = Waxing_Gibbous; 
+    MoonPic = Waxing_Gibbous;
   }
   if ((AG > 12.92) && (AG <= 16.61))         //Full Moon; ~87.5-100-87.5% illuminated
-  { 
+  {
     LP = "   Full Moon   ";
-    MoonPic = Full_Moon; 
-  }    
+    MoonPic = Full_Moon;
+  }
   if ((AG > 16.61) && (AG <= 20.30))         //Waning Gibbous; ~87.5-62.5% illuminated
-  { 
+  {
     LP = "Waning Gibbous ";
-    MoonPic = Waning_Gibbous; 
+    MoonPic = Waning_Gibbous;
   }
   if ((AG > 20.30) && (AG <= 23.99))         //Last Quarter; ~62.5-37.5% illuminated
-  { 
+  {
     LP = " Last Quarter  ";
-    MoonPic = Last_Quarter; 
+    MoonPic = Last_Quarter;
   }
   if ((AG > 23.99) && (AG <= 27.68))         //Old Crescent; ~37.5-12.5% illuminated
-  { 
+  {
     LP = "Waning Crescent";
-    MoonPic = Waning_Crescent; 
+    MoonPic = Waning_Crescent;
   }
   if ((AG >= 27.68) && (AG <= LC))           //New Moon; ~12.5-0% illuminated
-  { 
+  {
     LP = "    New Moon   ";
-    MoonPic = New_Moon; 
+    MoonPic = New_Moon;
   }
 
-  return phase; 
+  return phase;
 }
 
-double MyNormalize(double v) 
-{ 
+double MyNormalize(double v)
+{
   v = v - floor(v);
   if (v < 0)
     v = v + 1;
   return v;
-} 
+}
 /**************************** END OF LUNAR PHASE FUNCTION *****************************/
 
 
@@ -1276,13 +1283,13 @@ void printButton(char* text, int x1, int y1, int x2, int y2, boolean fontsize = 
 
   myGLCD.setBackColor(0, 0, 255);
   if (fontsize) {
-    myGLCD.setFont(BigFont); 
+    myGLCD.setFont(BigFont);
     fx = x1+(((x2 - x1+1)-(stl*16))/2);
     fy = y1+(((y2 - y1+1)-16)/2);
     myGLCD.print(text, fx, fy);
   }
   else {
-    myGLCD.setFont(SmallFont); 
+    myGLCD.setFont(SmallFont);
     fx = x1+(((x2 - x1)-(stl*8))/2);
     fy = y1+(((y2 - y1-1)-8)/2);
     myGLCD.print(text, fx, fy);
@@ -1303,13 +1310,13 @@ void printLedChangerP(char* text, int x1, int y1, int x2, int y2, boolean fontsi
   myGLCD.setBackColor(255, 255, 255);
   myGLCD.setColor(255, 0, 0);
   if (fontsize) {
-    myGLCD.setFont(BigFont); 
+    myGLCD.setFont(BigFont);
     fx = x1+(((x2 - x1+1)-(stl*16))/2);
     fy = y1+(((y2 - y1+1)-16)/2);
     myGLCD.print(text, fx, fy);
   }
   else {
-    myGLCD.setFont(SmallFont); 
+    myGLCD.setFont(SmallFont);
     fx = x1+(((x2 - x1)-(stl*8))/2);
     fy = y1+(((y2 - y1-1)-8)/2);
     myGLCD.print(text, fx, fy);
@@ -1330,13 +1337,13 @@ void printLedChangerM(char* text, int x1, int y1, int x2, int y2, boolean fontsi
   myGLCD.setBackColor(255, 255, 255);
   myGLCD.setColor(0, 0, 255);
   if (fontsize) {
-    myGLCD.setFont(BigFont); 
+    myGLCD.setFont(BigFont);
     fx = x1+(((x2 - x1+1)-(stl*16))/2);
     fy = y1+(((y2 - y1+1)-16)/2);
     myGLCD.print(text, fx, fy);
   }
   else {
-    myGLCD.setFont(SmallFont); 
+    myGLCD.setFont(SmallFont);
     fx = x1+(((x2 - x1)-(stl*8))/2);
     fy = y1+(((y2 - y1-1)-8)/2);
     myGLCD.print(text, fx, fy);
@@ -1349,7 +1356,7 @@ void printHeader(char* headline)
   setFont(SMALL, 255, 255, 0, 255, 255, 0);
   myGLCD.fillRect (1, 1, 318, 14);
   myGLCD.setColor(0, 0, 0);
-  myGLCD.print(headline, CENTER, 1);   
+  myGLCD.print(headline, CENTER, 1);
 }
 
 
@@ -1369,7 +1376,7 @@ void waitForIt(int x1, int y1, int x2, int y2)   // Draw a red frame while a but
   myGLCD.setColor(255, 0, 0);
   myGLCD.drawRoundRect (x1, y1, x2, y2);
   while (myTouch.dataAvailable()) {
-    myTouch.read(); 
+    myTouch.read();
   }
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect (x1, y1, x2, y2);
@@ -1381,7 +1388,7 @@ void waitForItSq(int x1, int y1, int x2, int y2) // Draw a red frame while a but
   myGLCD.setColor(255, 0, 0);
   myGLCD.drawRect (x1, y1, x2, y2);
   while (myTouch.dataAvailable()) {
-    myTouch.read(); 
+    myTouch.read();
   }
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRect (x1, y1, x2, y2);
@@ -1393,32 +1400,32 @@ int LedToPercent (int Led_out)                   //returns LED output in %
   int result;
 
   if (Led_out==0) {
-    result = 0; 
+    result = 0;
   }
   else {
-    result = map(Led_out, 1, 255, 1, 100);  
+    result = map(Led_out, 1, 255, 1, 100);
   }
 
-  return result; 
+  return result;
 }
 
 
 void drawBarGraph()
 {
   myGLCD.setColor(255, 255, 255);                //LED Chart
-  setFont(SMALL, 255, 255, 255, 0, 0, 0);     
+  setFont(SMALL, 255, 255, 255, 0, 0, 0);
 
   myGLCD.drawRect(30, 137, 148, 138);            //x-line
   myGLCD.drawRect(30, 137, 31, 36);              //y-line
 
   for (int i=0; i<5; i++)                        //tick-marks
-  { 
-    myGLCD.drawLine(31, (i*20)+36, 35, (i*20)+36); 
-  }  
-  myGLCD.print("100", 4, 30);  
-  myGLCD.print("80", 12, 50);       
+  {
+    myGLCD.drawLine(31, (i*20)+36, 35, (i*20)+36);
+  }
+  myGLCD.print("100", 4, 30);
+  myGLCD.print("80", 12, 50);
   myGLCD.print("60", 12, 70);
-  myGLCD.print("40", 12, 90); 
+  myGLCD.print("40", 12, 90);
   myGLCD.print("20", 12, 110);
   myGLCD.print("0", 20, 130);
 
@@ -1432,8 +1439,8 @@ void drawBarGraph()
   myGLCD.drawRect(91, 136, 103, 135);            //blue %bar place holder
   myGLCD.setColor(58, 95, 205);
   myGLCD.drawRect(108, 136, 120, 135);           //royal %bar place holder
-  myGLCD.setColor(224, 102, 255);  
-  myGLCD.drawRect(125, 136, 137, 135);           //UV %bar place holder    
+  myGLCD.setColor(224, 102, 255);
+  myGLCD.drawRect(125, 136, 137, 135);           //UV %bar place holder
 }
 
 
@@ -1441,7 +1448,7 @@ void drawBarandColorValue()
 {
   colorled_out = CL_100 + CL_10 + CL_1;
   setFont(SMALL, Rback, Gback, Bback, Rback, Gback, Bback);
-  myGLCD.print("    ", xValue, yValue);                  //fill over old   
+  myGLCD.print("    ", xValue, yValue);                  //fill over old
   setFont(SMALL, Rfont, Gfont, Bfont, Rback, Gback, Bback);
   myGLCD.printNumI(colorled_out, xValue, yValue);
 
@@ -1478,37 +1485,37 @@ void ledChangerGadget()
 {
   myGLCD.setColor(Rgad, Ggad, Bgad);
   myGLCD.fillRoundRect(199, 25, 285, 132);       //Gadget Color
-  myGLCD.setColor(0, 0, 0); 
+  myGLCD.setColor(0, 0, 0);
   myGLCD.fillRect(204, 50, 280, 74);             //Black Background of Numbers
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect(199, 25, 285, 132);       //Outline Gadget
   myGLCD.setColor(Rline, Gline, Bline);          //Line Color
   myGLCD.drawLine(199, 46, 285, 46);
-  setFont(LARGE, Rfont, Gfont, Bfont, Rback, Gback, Bback); 
+  setFont(LARGE, Rfont, Gfont, Bfont, Rback, Gback, Bback);
   if (COLOR==0){
     myGLCD.print("COLOR", 202, 28);
-  } 
+  }
   if (COLOR==1){
     myGLCD.print("WHITE", 202, 28);
-  } 
+  }
   if (COLOR==2){
     myGLCD.print("BLUE", 210, 28);
-  } 
+  }
   if (COLOR==3){
     myGLCD.print("ROYAL", 202, 28);
-  }    
+  }
   if (COLOR==4){
     myGLCD.print("RED", 218, 28);
-  } 
+  }
   if (COLOR==5){
     myGLCD.print("ULTRA", 202, 28);
-  } 
+  }
   if (COLOR==6){
     myGLCD.print("SUMP", 210, 28);
-  } 
+  }
   if (COLOR==7){
     myGLCD.print("LUNAR", 202, 28);
-  } 
+  }
   for (int b=0; b<3; b++)
   {
     printLedChangerP("+", (b*27)+204, 78, (b*27)+226, 100, LARGE);  //Press Increase Number
@@ -1519,11 +1526,11 @@ void ledChangerGadget()
     myGLCD.setColor(Rline, Gline, Bline);
     myGLCD.drawRect((c*27)+204, 78, (c*27)+226, 100);
     myGLCD.drawRect((c*27)+204, 105, (c*27)+226, 127);
-  }  
+  }
   setFont(LARGE, 255, 255, 255, 0, 0, 0);
   myGLCD.printNumI(cl_100, 214, 54);
   myGLCD.printNumI(cl_10, 234, 54);
-  myGLCD.printNumI(cl_1, 255, 54);  
+  myGLCD.printNumI(cl_1, 255, 54);
 }
 
 
@@ -1532,77 +1539,77 @@ void TimeSaver(boolean refreshAll=false)
   if (setTimeFormat==0)                                 //24HR Format
   {
     myGLCD.setColor(0, 0, 255);
-    myGLCD.setBackColor(0, 0, 0);  
+    myGLCD.setBackColor(0, 0, 0);
     myGLCD.setFont(SevenSegNumFont);
     if ((rtc[2]>=0) && (rtc[2]<=9))                    //Display HOUR
-    { 
+    {
       myGLCD.setColor(0, 0, 0);
       myGLCD.fillRect(80, 95, 111, 145);
       myGLCD.setColor(0, 0, 255);
       myGLCD.printNumI(rtc[2], 112, 95);
     }
-    else { 
+    else {
       myGLCD.printNumI(rtc[2], 80, 95);
     }
-  }    
+  }
 
   if (setTimeFormat==1)                                 //12HR Format
   {
     myGLCD.setColor(0, 0, 255);
-    myGLCD.setBackColor(0, 0, 0);  
+    myGLCD.setBackColor(0, 0, 0);
     myGLCD.setFont(SevenSegNumFont);
     if (rtc[2]==0)                                     //Display HOUR
-    { 
+    {
       myGLCD.print("12", 80, 95);
     }
     if ((rtc[2]>=1) && (rtc[2]<=9))
-    { 
+    {
       myGLCD.setColor(0, 0, 0);
       myGLCD.fillRect(80, 95, 111, 145);
       myGLCD.setColor(0, 0, 255);
       myGLCD.printNumI(rtc[2], 112, 95);
     }
     if ((rtc[2]>=10) && (rtc[2]<=12))
-    { 
+    {
       myGLCD.printNumI(rtc[2], 80, 95);
     }
     if ((rtc[2]>=13) && (rtc[2]<=21))
-    { 
+    {
       myGLCD.setColor(0, 0, 0);
       myGLCD.fillRect(80, 95, 111, 145);
       myGLCD.setColor(0, 0, 255);
       myGLCD.printNumI(rtc[2]-12, 112, 95);
     }
     if (rtc[2]>=22)
-    { 
+    {
       myGLCD.printNumI(rtc[2]-12, 80, 95);
     }
 
     if ((rtc[2]>=0) && (rtc[2]<=11))                   //Display AM/PM
-    { 
+    {
       setFont(LARGE, 0, 0, 255, 0, 0, 0);
       myGLCD.print("AM", 244, 129);
     }
     else
-    { 
+    {
       setFont(LARGE, 0, 0, 255, 0, 0, 0);
       myGLCD.print("PM", 244, 129);
-    } 
+    }
   }
 
   myGLCD.setColor(0, 0, 255);
-  myGLCD.setBackColor(0, 0, 0);  
+  myGLCD.setBackColor(0, 0, 0);
   myGLCD.setFont(SevenSegNumFont);
   myGLCD.fillCircle(160, 108, 4);
-  myGLCD.fillCircle(160, 132, 4);  
+  myGLCD.fillCircle(160, 132, 4);
   if ((rtc[1]>=0) && (rtc[1]<=9))                       //Display MINUTES
-  { 
+  {
     myGLCD.print("0", 176, 95);
     myGLCD.printNumI(rtc[1], 208, 95);
   }
-  else { 
+  else {
     myGLCD.printNumI(rtc[1], 176, 95);
-  } 
+  }
 }
 
 
@@ -1611,25 +1618,25 @@ void screenSaver()                               //Make the Screen Go Blank afte
   if ((setScreensaver==1) && (tempAlarmflag==false))
   {
     if (myTouch.dataAvailable())
-    { 
+    {
       processMyTouch();
-    } 
-    else { 
+    }
+    else {
       screenSaverTimer++;
     }
-    if (screenSaverTimer==setScreenSaverTimer) 
-    { 
+    if (screenSaverTimer==setScreenSaverTimer)
+    {
       dispScreen=0;
-      myGLCD.clrScr(); 
+      myGLCD.clrScr();
     }
     if (CLOCK_SCREENSAVER==true)
-    { 
-      if (screenSaverTimer>setScreenSaverTimer) 
-      { 
+    {
+      if (screenSaverTimer>setScreenSaverTimer)
+      {
         dispScreen=0;
-        TimeSaver(true); 
+        TimeSaver(true);
       }
-    } 
+    }
   }
 }
 
@@ -1637,197 +1644,197 @@ void screenSaver()                               //Make the Screen Go Blank afte
 void genSetSelect()
 {
   if (setCalendarFormat==0)                      //Calendar Format Buttons
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(185, 19, 305, 39);
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("DD/MM/YYYY", 207, 23);
     myGLCD.setColor(0, 0, 255);
-    myGLCD.fillRoundRect(185, 45, 305, 65);    
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
-    myGLCD.print("MTH DD, YYYY", 199, 49);   
+    myGLCD.fillRoundRect(185, 45, 305, 65);
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
+    myGLCD.print("MTH DD, YYYY", 199, 49);
   }
-  else 
-  { 
+  else
+  {
     myGLCD.setColor(0, 0, 255);
     myGLCD.fillRoundRect(185, 19, 305, 39);
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
     myGLCD.print("DD/MM/YYYY", 207, 23);
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(185, 45, 305, 65);    
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
-    myGLCD.print("MTH DD, YYYY", 199, 49);   
+    myGLCD.fillRoundRect(185, 45, 305, 65);
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
+    myGLCD.print("MTH DD, YYYY", 199, 49);
   }
   if (setTimeFormat==0)                          //Time Format Buttons
-  { 
+  {
     myGLCD.setColor(0, 0, 255);
     myGLCD.fillRoundRect(195, 76, 235, 96);
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
-    myGLCD.print("12HR", 201, 80);    
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
+    myGLCD.print("12HR", 201, 80);
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(255, 76, 295, 96);      
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
-    myGLCD.print("24HR", 261, 80);   
+    myGLCD.fillRoundRect(255, 76, 295, 96);
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
+    myGLCD.print("24HR", 261, 80);
   }
-  else 
-  { 
+  else
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(195, 76, 235, 96);
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
-    myGLCD.print("12HR", 201, 80);    
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
+    myGLCD.print("12HR", 201, 80);
     myGLCD.setColor(0, 0, 255);
-    myGLCD.fillRoundRect(255, 76, 295, 96);    
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
-    myGLCD.print("24HR", 261, 80); 
+    myGLCD.fillRoundRect(255, 76, 295, 96);
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
+    myGLCD.print("24HR", 261, 80);
   }
   if (setTempScale==0)                           //Temperature Scale Buttons
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(195, 107, 235, 127);
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
-    myGLCD.print("C", 215, 111);   
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
+    myGLCD.print("C", 215, 111);
     myGLCD.setColor(0, 0, 255);
-    myGLCD.fillRoundRect(255, 107, 295, 127);    
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
+    myGLCD.fillRoundRect(255, 107, 295, 127);
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
     myGLCD.print("F", 275, 111);
-    myGLCD.setColor(0, 0, 0);   
-    myGLCD.drawCircle(210, 113, 1);              
+    myGLCD.setColor(0, 0, 0);
+    myGLCD.drawCircle(210, 113, 1);
     myGLCD.setColor(255, 255, 255);
     myGLCD.drawCircle(270, 113, 1);
   }
-  else 
-  { 
+  else
+  {
     myGLCD.setColor(0, 0, 255);
     myGLCD.fillRoundRect(195, 107, 235, 127);
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
-    myGLCD.print("C", 215, 111);    
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
+    myGLCD.print("C", 215, 111);
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(255, 107, 295, 127);      
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
+    myGLCD.fillRoundRect(255, 107, 295, 127);
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("F", 275, 111);
     myGLCD.setColor(255, 255, 255);
-    myGLCD.drawCircle(210, 113, 1);              
-    myGLCD.setColor(0, 0, 0);  
+    myGLCD.drawCircle(210, 113, 1);
+    myGLCD.setColor(0, 0, 0);
     myGLCD.drawCircle(270, 113, 1);
-  }  
+  }
   if (setScreensaver==1)                         //Screensaver Buttons
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(195, 138, 235, 158);
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
-    myGLCD.print("ON", 209, 142);    
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
+    myGLCD.print("ON", 209, 142);
     myGLCD.setColor(0, 0, 255);
-    myGLCD.fillRoundRect(255, 138, 295, 158);    
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
-    myGLCD.print("OFF", 265, 142); 
+    myGLCD.fillRoundRect(255, 138, 295, 158);
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
+    myGLCD.print("OFF", 265, 142);
   }
-  else 
-  { 
+  else
+  {
     myGLCD.setColor(0, 0, 255);
     myGLCD.fillRoundRect(195, 138, 235, 158);
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
-    myGLCD.print("ON", 209, 142);    
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
+    myGLCD.print("ON", 209, 142);
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(255, 138, 295, 158);      
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
-    myGLCD.print("OFF", 265, 142); 
-  }  
+    myGLCD.fillRoundRect(255, 138, 295, 158);
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
+    myGLCD.print("OFF", 265, 142);
+  }
   if (setAutoStop==1)                            //Auto-Stop on Feed Buttons
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(195, 169, 235, 189);
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
-    myGLCD.print("ON", 209, 173);    
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
+    myGLCD.print("ON", 209, 173);
     myGLCD.setColor(0, 0, 255);
-    myGLCD.fillRoundRect(255, 169, 295, 189);    
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
-    myGLCD.print("OFF", 265, 173); 
+    myGLCD.fillRoundRect(255, 169, 295, 189);
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
+    myGLCD.print("OFF", 265, 173);
   }
-  else 
-  { 
+  else
+  {
     myGLCD.setColor(0, 0, 255);
     myGLCD.fillRoundRect(195, 169, 235, 189);
-    setFont(SMALL, 255, 255, 255, 0, 0, 255);  
-    myGLCD.print("ON", 209, 173);    
+    setFont(SMALL, 255, 255, 255, 0, 0, 255);
+    myGLCD.print("ON", 209, 173);
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(255, 169, 295, 189);      
-    setFont(SMALL, 0, 0, 0, 0, 255, 0);  
-    myGLCD.print("OFF", 265, 173); 
-  }  
+    myGLCD.fillRoundRect(255, 169, 295, 189);
+    setFont(SMALL, 0, 0, 0, 0, 255, 0);
+    myGLCD.print("OFF", 265, 173);
+  }
   myGLCD.setColor(255, 255, 255);
   myGLCD.drawRoundRect(185, 19, 305, 39);
   myGLCD.drawRoundRect(185, 45, 305, 65);
   for (int x=0; x<2; x++)
-  { 
+  {
     for (int y=0; y<4; y++)
-    { 
-      myGLCD.drawRoundRect((x*60)+195, (y*31)+76, (x*60)+235, (y*31)+96); 
+    {
+      myGLCD.drawRoundRect((x*60)+195, (y*31)+76, (x*60)+235, (y*31)+96);
     }
   }
-}    
+}
 
 
 void feedingTimeOnOff()
 {
   if ((feedTime==1) && (FEEDTime1==1))
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(70, 150, 250, 170); 
+    myGLCD.fillRoundRect(70, 150, 250, 170);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("Feeding Time 1 ON", 94, 154);
   }
   if ((feedTime==1) && (FEEDTime1==0))
-  { 
+  {
     myGLCD.setColor(255, 0, 0);
-    myGLCD.fillRoundRect(70, 150, 250, 170); 
+    myGLCD.fillRoundRect(70, 150, 250, 170);
     setFont(SMALL, 255, 255, 255, 255, 0, 0);
     myGLCD.print("Feeding Time 1 OFF", 90, 154);
   }
   if ((feedTime==2) && (FEEDTime2==1))
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(70, 150, 250, 170); 
+    myGLCD.fillRoundRect(70, 150, 250, 170);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("Feeding Time 2 ON", 94, 154);
   }
   if ((feedTime==2) && (FEEDTime2==0))
-  { 
+  {
     myGLCD.setColor(255, 0, 0);
-    myGLCD.fillRoundRect(70, 150, 250, 170); 
+    myGLCD.fillRoundRect(70, 150, 250, 170);
     setFont(SMALL, 255, 255, 255, 255, 0, 0);
     myGLCD.print("Feeding Time 2 OFF", 90, 154);
   }
   if ((feedTime==3) && (FEEDTime3==1))
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(70, 150, 250, 170); 
+    myGLCD.fillRoundRect(70, 150, 250, 170);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("Feeding Time 3 ON", 94, 154);
   }
   if ((feedTime==3) && (FEEDTime3==0))
-  { 
+  {
     myGLCD.setColor(255, 0, 0);
-    myGLCD.fillRoundRect(70, 150, 250, 170); 
+    myGLCD.fillRoundRect(70, 150, 250, 170);
     setFont(SMALL, 255, 255, 255, 255, 0, 0);
     myGLCD.print("Feeding Time 3 OFF", 90, 154);
   }
   if ((feedTime==4) && (FEEDTime4==1))
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(70, 150, 250, 170); 
+    myGLCD.fillRoundRect(70, 150, 250, 170);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("Feeding Time 4 ON", 94, 154);
   }
   if ((feedTime==4) && (FEEDTime4==0))
-  { 
+  {
     myGLCD.setColor(255, 0, 0);
-    myGLCD.fillRoundRect(70, 150, 250, 170); 
+    myGLCD.fillRoundRect(70, 150, 250, 170);
     setFont(SMALL, 255, 255, 255, 255, 0, 0);
     myGLCD.print("Feeding Time 4 OFF", 90, 154);
   }
 
   myGLCD.setColor(255, 255, 255);
-  myGLCD.drawRoundRect(70, 150, 250, 170);   
+  myGLCD.drawRoundRect(70, 150, 250, 170);
 }
 /******************************* END OF MISC. FUNCTIONS *******************************/
 
@@ -1836,12 +1843,13 @@ void feedingTimeOnOff()
 void mainScreen(boolean refreshAll=false)
 {
   int ledLevel, t;
-  String oldval, deg;  
+  char oldval[16], deg;
 
   TimeDateBar(true);
   Serial.println("mainScreen1");
   oldval = day;                                  //refresh day if different
-  day = String(rtc[4]);
+  snprintf(day,3,"%i",rtc[4]);
+//  day = rtc[4];
   if ((oldval!=day) || refreshAll)
   {
     myGLCD.setColor(64, 64, 64);                //Draw Borders & Dividers in Grey
@@ -1850,33 +1858,33 @@ void mainScreen(boolean refreshAll=false)
     myGLCD.drawRect(160, 125, 319, 127);        //Horizontal Divider
     myGLCD.fillRect(0, 0, 319, 14);             //Top Bar
     myGLCD.setColor(0, 0, 0);
-    myGLCD.drawLine(159, 126, 161, 126);        //Horizontal Divider Separator     
+    myGLCD.drawLine(159, 126, 161, 126);        //Horizontal Divider Separator
     setFont(SMALL, 255, 255, 0, 64, 64, 64);
     myGLCD.print("Jarduino Aquarium Controller v.1.1", CENTER, 1);
     setFont(SMALL, 255, 255, 255, 0, 0, 0);
     myGLCD.print("LED ARRAY", 52, 20);
-    myGLCD.print("LUNAR PHASE", 196, 20); 
+    myGLCD.print("LUNAR PHASE", 196, 20);
     myGLCD.print("MONITORS & ALERTS", 174, 133);
 
     myGLCD.drawBitmap(211, 35, 58, 58, MoonPic, 1);    //Moon Phase Picture (middle 240,64)
-    setFont(SMALL, 176, 176, 176, 0, 0, 0);            
-    char bufferLP[16];
-    LP.toCharArray(bufferLP, 16);
-    myGLCD.print(bufferLP, 180, 96);            //Print Moon Phase Description to LCD
+    setFont(SMALL, 176, 176, 176, 0, 0, 0);
+//    char bufferLP[16];
+//    LP.toCharArray(bufferLP, 16);
+    myGLCD.print(LP, 180, 96);            //Print Moon Phase Description to LCD
     float lunarCycle = moonPhase(rtc[6], rtc[5], rtc[4]); //get a value for the lunar cycle
     if ((lunarCycle*100) < 1)                   //Print % of Full to LCD
-    { 
-      myGLCD.print(" 0.0", 188, 108); 
+    {
+      myGLCD.print(" 0.0", 188, 108);
     }
-    else { 
+    else {
       myGLCD.printNumF(lunarCycle*100, 1, 188, 108);
     }
-    myGLCD.print("% of Full", 220, 108);     
+    myGLCD.print("% of Full", 220, 108);
   }
 
-  drawBarGraph();    
+  drawBarGraph();
   Serial.println("mainScreen 2-b");
-  oldval.reserve(6*22);
+//  oldval.reserve(6*22);
   if ((sumpLed!=sled_out) || refreshAll)         //refresh red led display
   {
     //Serial.println("- 1 -");
@@ -1885,12 +1893,13 @@ void mainScreen(boolean refreshAll=false)
     ledLevel = LedToPercent(sled_out);
    // Serial.println(ledLevel);
    // Serial.println("- 1 -");
-    oldval = "SUMP:   " + String(ledLevel) + "%    ";
+    snprintf (oldval,17,"SUMP:   %i%%    ",ledLevel);
+//    oldval = "SUMP:   " + String(ledLevel) + "%    ";
     //oldval = "SUMP:   xx%   s ";
   //  Serial.println("- 3 -");
-    char bufferS[13];
+//    char bufferS[13];
     //Serial.println("- 1 -");
-    oldval.toCharArray(bufferS, 13);
+//    oldval.toCharArray(bufferS, 13);
    // Serial.println("- 4 -");
     t= 136 - sled_out*.39;
    // Serial.println("- 1 -");
@@ -1902,47 +1911,49 @@ void mainScreen(boolean refreshAll=false)
    // Serial.println("- 6 -");
     setFont(SMALL, 0, 150, 0, 0, 0, 0);
    // Serial.println("- 1 -");
-    myGLCD.print(bufferS, 45, 147);              //display SUMP LEDs % output
+    myGLCD.print(oldval, 45, 147);              //display SUMP LEDs % output
     //Serial.println("- 7 -");
     myGLCD.drawRect(40, 136, 52, 135);           //SUMP %bar place holder
    // Serial.println("- 1 -");
     myGLCD.fillRect(40, 136, 52, t);             //SUMP percentage bar
-  }    
+  }
 Serial.println("mainScreen 2-c");
   if ((redLed!=rled_out) || refreshAll)          //refresh red led display
   {
     redLed = rled_out;
     ledLevel = LedToPercent(rled_out);
       Serial.println("mump 2");
-    oldval = "Red:    " + String(ledLevel) + "%  " + "  ";
-    char bufferR[13];
+      snprintf (oldval,17,"Red:    %i%%    ",ledLevel);
+//    oldval = "Red:    " + String(ledLevel) + "%  " + "  ";
+//    char bufferR[13];
      Serial.println("mump 2");
-    oldval.toCharArray(bufferR, 13);
+//    oldval.toCharArray(oldval, 13);
     t= 136 - rled_out*.39;
 
     myGLCD.setColor(0, 0, 0);
     myGLCD.fillRect(57, t, 69, 36);              //hide end of last bar
     myGLCD.setColor(255, 0, 0);
     setFont(SMALL, 255, 0, 0, 0, 0, 0);
-    myGLCD.print(bufferR, 45, 159);              //display red LEDs % output
+    myGLCD.print(oldval, 45, 159);              //display red LEDs % output
     myGLCD.drawRect(57, 136, 69, 135);           //red %bar place holder
     myGLCD.fillRect(57, 136, 69, t);             //red percentage bar
-  }    
+  }
   Serial.println("mainScreen 22");
   if ((whiteLed!=wled_out) || refreshAll)        //refresh white led display
   {
     whiteLed = wled_out;
     ledLevel = LedToPercent(wled_out);
-    oldval = "White:  " + String(ledLevel) + "%  " + "  ";
-    char bufferW[13];
-    oldval.toCharArray(bufferW, 13);
+    snprintf (oldval,17,"White:  %i%%    ",ledLevel);
+//    oldval = "White:  " + String(ledLevel) + "%  " + "  ";
+//    char bufferW[13];
+//    oldval.toCharArray(bufferW, 13);
     t= 136 - wled_out*.39;
 
     myGLCD.setColor(0, 0, 0);
     myGLCD.fillRect(74, t, 86, 36);              //hide end of last bar
     myGLCD.setColor(255, 255, 255);
     setFont(SMALL, 255, 255, 255, 0, 0, 0);
-    myGLCD.print(bufferW, 45, 171);              //display white LEDs % output
+    myGLCD.print(oldval, 45, 171);              //display white LEDs % output
     myGLCD.drawRect(74, 136, 86, 135);           //white %bar place holder
     myGLCD.fillRect(74, 136, 86, t);             //white percentage bar
   }
@@ -1951,16 +1962,17 @@ Serial.println("mainScreen 2-d");
   {
     blueLed = bled_out;
     ledLevel = LedToPercent(bled_out);
-    oldval = "Blue:   " + String(ledLevel) + "%" + "  ";
-    char bufferB[13];
-    oldval.toCharArray(bufferB, 13);
+    snprintf (oldval,17,"Blue:   %i%%    ",ledLevel);
+//    oldval = "Blue:   " + String(ledLevel) + "%" + "  ";
+//    char bufferB[13];
+//    oldval.toCharArray(bufferB, 13);
     t= 136 - bled_out*.39;
 
     myGLCD.setColor(0, 0, 0);
-    myGLCD.fillRect(91, t, 103, 36);             //hide end of last bar 
+    myGLCD.fillRect(91, t, 103, 36);             //hide end of last bar
     myGLCD.setColor(9, 184, 255);
     setFont(SMALL, 99, 184, 255, 0, 0, 0);
-    myGLCD.print(bufferB, 45, 183);              //display blue LEDs % output
+    myGLCD.print(oldval, 45, 183);              //display blue LEDs % output
     myGLCD.drawRect(91, 136, 103, 135);          //blue %bar place holder
     myGLCD.fillRect(91, 136, 103, t);            //blue percentage bar
   }
@@ -1969,16 +1981,17 @@ Serial.println("mainScreen 2-d");
   {
     rblueLed = rbled_out;
     ledLevel = LedToPercent(rbled_out);
-    oldval = "Royal:  " + String(ledLevel) + "%  " + "  ";
-    char bufferRB[13];
-    oldval.toCharArray(bufferRB, 13);
+    snprintf (oldval,17,"Royal:  %i%%    ",ledLevel);
+//    oldval = "Royal:  " + String(ledLevel) + "%  " + "  ";
+//    char bufferRB[13];
+//    oldval.toCharArray(bufferRB, 13);
     t= 136 - rbled_out*.39;
 
     myGLCD.setColor(0, 0, 0);
     myGLCD.fillRect(108, t, 120, 36);            //hide end of last bar
     myGLCD.setColor(58, 95, 205);
     setFont(SMALL, 58, 95, 205, 0, 0, 0);
-    myGLCD.print(bufferRB, 45, 195);             //display royal blue LEDs % output
+    myGLCD.print(oldval, 45, 195);             //display royal blue LEDs % output
     myGLCD.drawRect(108, 136, 120, 135);         //royal %bar place holder
     myGLCD.fillRect(108, 136, 120, t);           //royal percentage bar
   }
@@ -1987,16 +2000,17 @@ Serial.println("mainScreen 2-d");
   {
     uvLed = uvled_out;
     ledLevel = LedToPercent(uvled_out);
-    oldval = "Ultra:  " + String(ledLevel) + "%  " + "  ";
-    char bufferUV[13];
-    oldval.toCharArray(bufferUV, 13);
+    snprintf (oldval,17,"Ultra:  %i%%    ",ledLevel);
+//    oldval = "Ultra:  " + String(ledLevel) + "%  " + "  ";
+//    char bufferUV[13];
+//    oldval.toCharArray(bufferUV, 13);
     t= 136 - uvled_out*.39;
 
     myGLCD.setColor(0, 0, 0);
     myGLCD.fillRect(125, t, 137, 36);            //hide end of last bar
     myGLCD.setColor(224, 102, 255);
     setFont(SMALL, 224, 102, 255, 0, 0, 0);
-    myGLCD.print(bufferUV, 45, 207);             //display UV LEDs % output
+    myGLCD.print(oldval, 45, 207);             //display UV LEDs % output
     myGLCD.drawRect(125, 136, 137, 135);         //UV %bar place holder
     myGLCD.fillRect(125, 136, 137, t);           //UV percentage bar
   }
@@ -2008,23 +2022,23 @@ Serial.println("mainScreen 2-d");
     deg = "C";
   }
   degC_F=deg;
-  char bufferDeg[2];
-  degC_F.toCharArray(bufferDeg,2);
+  //char bufferDeg[2];
+ // degC_F.toCharArray(bufferDeg,2);
 
   if (refreshAll)                                //draw static elements
   {
     setFont(SMALL, 0, 255, 0, 0, 0 , 0);
     myGLCD.print("Water Temp:", 169, 148);
-    myGLCD.drawCircle(304, 150, 1);              
-    myGLCD.print(bufferDeg, 309, 148);
+    myGLCD.drawCircle(304, 150, 1);
+    myGLCD.print(degC_F, 309, 148);
 
     myGLCD.print("Hood Temp:", 169 , 161);
-    myGLCD.drawCircle(304, 163, 1);              
-    myGLCD.print(bufferDeg, 309, 161);
+    myGLCD.drawCircle(304, 163, 1);
+    myGLCD.print(degC_F, 309, 161);
 
     myGLCD.print("Sump Temp:", 169, 174);
-    myGLCD.drawCircle(304, 176, 1);              
-    myGLCD.print(bufferDeg, 309, 174); 
+    myGLCD.drawCircle(304, 176, 1);
+    myGLCD.print(degC_F, 309, 174);
   }
   Serial.println("mainScreen 5");
   myGLCD.setColor(0, 0, 0);                      //clear cooler/heater & alarm notices
@@ -2032,14 +2046,14 @@ Serial.println("mainScreen 2-d");
   myGLCD.fillRect(182, 203, 315, 221);
   Serial.println("mainScreen 4");
   if ((tempW>50) || (tempW<10))                  //range in deg C no matter what
-  { 
+  {
     setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("Error", 260, 148);
   }
-  else 
+  else
   {
-    if (setTempScale==1) 
-    { 
+    if (setTempScale==1)
+    {
       tempW = ((tempW*1.8) + 32.05);
     }         //C to F with rounding
     if (tempCoolflag==true)                     //Water temperature too HIGH
@@ -2049,73 +2063,73 @@ Serial.println("mainScreen 2-d");
       setFont(SMALL, 255, 255, 0, 0, 0, 0);
       myGLCD.print("Chiller ON", 200, 191);
     }
-    else 
+    else
       if (tempHeatflag==true)                      //Water temperature too LOW
-    { 
+    {
       setFont(SMALL, 0, 0, 255, 0, 0, 0);
       myGLCD.printNumF( tempW, 1, 260, 148);
       setFont(SMALL, 255, 255, 0, 0, 0, 0);
       myGLCD.print("Heater ON", 203, 191);
     }
-    else 
-    { 
+    else
+    {
       setFont(SMALL, 0, 255, 0, 0, 0, 0);
       myGLCD.printNumF( tempW, 1, 260, 148);
-    } 
+    }
     if ((tempW<100) && (tempW>=0))
-    { 
+    {
       myGLCD.setColor(0, 0, 0);
       myGLCD.fillRect(292, 148, 300, 160);
     }
-  }          
+  }
 
   if ((tempH>50) || (tempH<10))
-  { 
+  {
     setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("Error", 260, 161);
   }
   else
   {
-    if (setTempScale==1) 
-    { 
+    if (setTempScale==1)
+    {
       tempH = ((tempH*1.8) + 32.05);
-    }      
+    }
     setFont(SMALL, 0, 255, 0, 0, 0, 0);
     myGLCD.printNumF( tempH, 1, 260, 161);            //Hood temperature (No Flags)
-    if ((tempH<100) && (tempH>=0)) 
-    { 
+    if ((tempH<100) && (tempH>=0))
+    {
       myGLCD.setColor(0, 0, 0);
       myGLCD.fillRect(292, 161, 300, 173);
     }
-  }     
-  Serial.println("mainScreen 6");     
+  }
+  Serial.println("mainScreen 6");
   if ((tempS>50) || (tempS<10))
-  { 
+  {
     setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("Error", 260, 174);
   }
   else
   {
-    if (setTempScale==1) 
-    { 
-      tempS = ((tempS*1.8) + 32.05); 
+    if (setTempScale==1)
+    {
+      tempS = ((tempS*1.8) + 32.05);
     }
     setFont(SMALL, 0, 255, 0, 0, 0, 0);
-    myGLCD.printNumF( tempS, 1, 260, 174);            //Sump temperature (No Flags)         
+    myGLCD.printNumF( tempS, 1, 260, 174);            //Sump temperature (No Flags)
     if ((tempS<100) && (tempS>=0))
-    { 
+    {
       myGLCD.setColor(0, 0, 0);
       myGLCD.fillRect(292, 174, 300, 186);
     }
   }
 
   if ((tempAlarmflag==true)&&(tempHeatflag==true))     //Alarm: H20 temp Below offsets
-  { 
+  {
     setFont(LARGE, 0, 0, 255, 0, 0, 0);
     myGLCD.print("ALARM!!", 185, 204);
-  }    
+  }
   if ((tempAlarmflag==true)&&(tempCoolflag==true))     //Alarm: H20 temp Above offsets
-  { 
+  {
     setFont(LARGE, 255, 0, 0, 0, 0, 0);
     myGLCD.print("ALARM!!", 185, 204);
   }
@@ -2128,24 +2142,24 @@ void screenReturn()                                    //Auto Return to MainScre
     if (dispScreen!=0)
     {
       if (myTouch.dataAvailable())
-      { 
+      {
         processMyTouch();
-      } 
-      else { 
-        returnTimer++; 
       }
-      if (returnTimer>setReturnTimer) 
+      else {
+        returnTimer++;
+      }
+      if (returnTimer>setReturnTimer)
       {
         returnTimer=0;
-        LEDtestTick = false;       
-        colorLEDtest = false;           
+        LEDtestTick = false;
+        colorLEDtest = false;
         ReadFromEEPROM();
         dispScreen=0;
         clearScreen();
         mainScreen(true);
       }
     }
-  } 
+  }
 }
 /******************************** END OF MAIN SCREEN **********************************/
 
@@ -2157,22 +2171,22 @@ void menuScreen()
 
   myGLCD.setColor(64, 64, 64);
   myGLCD.drawRect(0, 196, 319, 194);
-  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);  
+  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
   printButton("Time and Date", tanD[0], tanD[1], tanD[2], tanD[3]);
   printButton("H2O Temp Control", temC[0], temC[1], temC[2], temC[3]);
   printButton("WaveMaker", wave[0], wave[1], wave[2], wave[3]);
-  printButton("General Settings", gSet[0], gSet[1], gSet[2], gSet[3]);    
+  printButton("General Settings", gSet[0], gSet[1], gSet[2], gSet[3]);
   printButton("LED Testing", tesT[0], tesT[1], tesT[2], tesT[3]);
   printButton("Change LED Values", ledChM[0], ledChM[1], ledChM[2], ledChM[3]);
   printButton("Automatic Feeder", aFeed[0], aFeed[1], aFeed[2], aFeed[3]);
-  printButton("About", about[0], about[1], about[2], about[3]);  
+  printButton("About", about[0], about[1], about[2], about[3]);
 }
 /********************************* END OF MENU SCREEN *********************************/
 
 
 /************** TIME and DATE SCREEN ********** dispScreen = 2 ************************/
-void clockScreen(boolean refreshAll=true) 
+void clockScreen(boolean refreshAll=true)
 {
   if (refreshAll)
   {
@@ -2194,10 +2208,10 @@ void clockScreen(boolean refreshAll=true)
     printButton ("-", houD[0], houD[1], houD[2], houD[3], true);     //hour down
     printButton ("-", minD[0], minD[1], minD[2], minD[3], true);     //min down
     if (setTimeFormat==1)
-    { 
-      printButton ("+", ampmU[0], ampmU[1], ampmU[2], ampmU[3], true); //AM/PM up    
+    {
+      printButton ("+", ampmU[0], ampmU[1], ampmU[2], ampmU[3], true); //AM/PM up
       printButton ("-", ampmD[0], ampmD[1], ampmD[2], ampmD[3], true);
-    }//AM/PM down    
+    }//AM/PM down
 
     printButton ("+", monU[0], monU[1], monU[2], monU[3], true);     //month up
     printButton ("+", dayU[0], dayU[1], dayU[2], dayU[3], true);     //day up
@@ -2208,82 +2222,82 @@ void clockScreen(boolean refreshAll=true)
   }
 
   ReadFromEEPROM();
-  timeDispH=rtcSet[2]; 
-  timeDispM=rtcSet[1]; 
-  xTimeH=107; 
-  yTime=52; 
+  timeDispH=rtcSet[2];
+  timeDispM=rtcSet[1];
+  xTimeH=107;
+  yTime=52;
   xColon=xTimeH+42;
-  xTimeM10=xTimeH+70; 
-  xTimeM1=xTimeH+86; 
+  xTimeM10=xTimeH+70;
+  xTimeM1=xTimeH+86;
   xTimeAMPM=xTimeH+155;
   timeChange();
 
-  setFont(LARGE, 255, 255, 255, 0, 0, 0);    
+  setFont(LARGE, 255, 255, 255, 0, 0, 0);
   myGLCD.print("Date", 20, 142);
-  myGLCD.print("/", 149, 142);    
+  myGLCD.print("/", 149, 142);
   myGLCD.print("/", 219, 142);
   if (setCalendarFormat==0)                             //DD/MM/YYYY Format
   {
-    setFont(SMALL, 255, 255, 255, 0, 0, 0); 
-    myGLCD.print("(DD/MM/YYYY)", 5, 160); 
-    setFont(LARGE, 255, 255, 255, 0, 0, 0);          
+    setFont(SMALL, 255, 255, 255, 0, 0, 0);
+    myGLCD.print("(DD/MM/YYYY)", 5, 160);
+    setFont(LARGE, 255, 255, 255, 0, 0, 0);
     if ((rtcSet[4]>=0) && (rtcSet[4]<=9))              //Set DAY
-    { 
+    {
       myGLCD.print("0", 107, 142);
       myGLCD.printNumI(rtcSet[4], 123, 142);
     }
-    else { 
+    else {
       myGLCD.printNumI(rtcSet[4], 107, 142);
-    } 
+    }
     if ((rtcSet[5]>=0) && (rtcSet[5]<=9))              //Set MONTH
-    { 
+    {
       myGLCD.print("0", 177, 142);
       myGLCD.printNumI(rtcSet[5], 193, 142);
     }
-    else { 
+    else {
       myGLCD.printNumI(rtcSet[5], 177, 142);
-    } 
-  } 
+    }
+  }
   else
     if (setCalendarFormat==1)                             //MM/DD/YYYY Format
     {
-      setFont(SMALL, 255, 255, 255, 0, 0, 0); 
-      myGLCD.print("(MM/DD/YYYY)", 5, 160); 
-      setFont(LARGE, 255, 255, 255, 0, 0, 0);          
+      setFont(SMALL, 255, 255, 255, 0, 0, 0);
+      myGLCD.print("(MM/DD/YYYY)", 5, 160);
+      setFont(LARGE, 255, 255, 255, 0, 0, 0);
       if ((rtcSet[5]>=0) && (rtcSet[5]<=9))              //Set MONTH
-      { 
+      {
         myGLCD.print("0", 107, 142);
         myGLCD.printNumI(rtcSet[5], 123, 142);
       }
-      else { 
+      else {
         myGLCD.printNumI(rtcSet[5], 107, 142);
-      } 
+      }
       if ((rtcSet[4]>=0) && (rtcSet[4]<=9))              //Set DAY
-      { 
+      {
         myGLCD.print("0", 177, 142);
         myGLCD.printNumI(rtcSet[4], 193, 142);
       }
-      else { 
+      else {
         myGLCD.printNumI(rtcSet[4], 177, 142);
-      } 
-    }  
+      }
+    }
   myGLCD.printNumI(rtcSet[6], 247, 142);                //Set YEAR
 }
 
 void timeChange()
 {
-  setFont(LARGE, 255, 255, 255, 0, 0, 0); 
+  setFont(LARGE, 255, 255, 255, 0, 0, 0);
   myGLCD.print("Time", 20, yTime);
 
   if (setTimeFormat==0)                                 //24HR Format
-  { 
-    setFont(SMALL, 255, 255, 255, 0, 0, 0); 
+  {
+    setFont(SMALL, 255, 255, 255, 0, 0, 0);
     myGLCD.print("(24HR)", 29, yTime+18);
   }
 
   if (setTimeFormat==1)                                 //12HR Format
-  { 
-    setFont(SMALL, 255, 255, 255, 0, 0, 0);  
+  {
+    setFont(SMALL, 255, 255, 255, 0, 0, 0);
     myGLCD.print("(12HR)", 29, yTime+18);
   }
 
@@ -2292,89 +2306,89 @@ void timeChange()
 
 void timeCorrectFormat()
 {
-  setFont(LARGE, 255, 255, 255, 0, 0, 0);   
-  myGLCD.print(":",  xColon, yTime);  
+  setFont(LARGE, 255, 255, 255, 0, 0, 0);
+  myGLCD.print(":",  xColon, yTime);
   if (setTimeFormat==0)                                 //24HR Format
   {
-    setFont(LARGE, 255, 255, 255, 0, 0, 0);  
+    setFont(LARGE, 255, 255, 255, 0, 0, 0);
     if ((timeDispH>=0) && (timeDispH<=9))              //Set HOUR
-    { 
+    {
       myGLCD.print("0", xTimeH, yTime);
       myGLCD.printNumI(timeDispH, xTimeH+16, yTime);
     }
-    else { 
+    else {
       myGLCD.printNumI(timeDispH, xTimeH, yTime);
-    } 
-  }    
+    }
+  }
   if (setTimeFormat==1)                                 //12HR Format
   {
-    setFont(LARGE, 255, 255, 255, 0, 0, 0);  
+    setFont(LARGE, 255, 255, 255, 0, 0, 0);
     if (timeDispH==0)                                  //Set HOUR
-    { 
+    {
       myGLCD.print("12", xTimeH, yTime);
     }
     if ((timeDispH>=1) && (timeDispH<=9))
-    { 
+    {
       myGLCD.print("0", xTimeH, yTime);
       myGLCD.printNumI(timeDispH, xTimeH+16, yTime);
     }
     if ((timeDispH>=10) && (timeDispH<=12))
-    { 
+    {
       myGLCD.printNumI(timeDispH, xTimeH, yTime);
     }
     if ((timeDispH>=13) && (timeDispH<=21))
-    { 
+    {
       myGLCD.print("0", xTimeH, yTime);
       myGLCD.printNumI(timeDispH-12, xTimeH+16, yTime);
     }
     if (timeDispH>=22)
-    { 
+    {
       myGLCD.printNumI(timeDispH-12, xTimeH, yTime);
     }
 
     if (AM_PM==1)
-    { 
-      myGLCD.print("AM", xTimeAMPM, yTime); 
+    {
+      myGLCD.print("AM", xTimeAMPM, yTime);
     }
     if (AM_PM==2)
-    { 
-      myGLCD.print("PM", xTimeAMPM, yTime); 
+    {
+      myGLCD.print("PM", xTimeAMPM, yTime);
     }
   }
   if ((timeDispM>=0) && (timeDispM<=9))                 //Set MINUTES
-  { 
+  {
     myGLCD.print("0", xTimeM10, yTime);
     myGLCD.printNumI(timeDispM, xTimeM1, yTime);
   }
-  else { 
+  else {
     myGLCD.printNumI(timeDispM, xTimeM10, yTime);
-  } 
-}    
+  }
+}
 /**************************** END OF TIME and DATE SCREEN *****************************/
 
 
 /*********** H2O TEMP CONTROL SCREEN ********** dispScreen = 3 ************************/
 void tempScreen(boolean refreshAll=false)
 {
-  String deg;
+  char deg[2];
   if (refreshAll)
   {
     if ((setTempC==0) && (setTempScale==0)) {
-      setTempC = 26.1;  
+      setTempC = 26.1;
     }                         //change to 26.1 deg C
     if (((setTempF==0) || (setTempF==setTempC)) && (setTempScale==1)) {
-      setTempF = 79.0;  
+      setTempF = 79.0;
     }                         //change to 79.0 deg F
 
     if (setTempScale==1) {
       temp2beS = setTempF;
       temp2beO = offTempF;
-      temp2beA = alarmTempF; 
+      temp2beA = alarmTempF;
     }
     else {
       temp2beS = setTempC;
       temp2beO = offTempC;
-      temp2beA = alarmTempC; 
+      temp2beA = alarmTempC;
     }
 
     printHeader("H2O Temperature Control Settings");
@@ -2392,16 +2406,16 @@ void tempScreen(boolean refreshAll=false)
       deg = "C";
     }
     degC_F=deg;
-    char bufferDeg[2];
-    degC_F.toCharArray(bufferDeg,2);
+   // char bufferDeg[2];
+//    degC_F.toCharArray(bufferDeg,2);
 
     setFont(SMALL, 255, 255, 255, 0, 0, 0);
     myGLCD.print("Desired Temperature in", 60, 34);
-    myGLCD.drawCircle(245, 36, 1);              
-    myGLCD.print(bufferDeg, 250, 34);
+    myGLCD.drawCircle(245, 36, 1);
+    myGLCD.print(degC_F, 250, 34);
     myGLCD.print(":",258,34);
     myGLCD.print("Temperature Offset:", CENTER, 84);
-    myGLCD.print("Alarm Offset:", CENTER, 134);  
+    myGLCD.print("Alarm Offset:", CENTER, 134);
 
     printButton("-", temM[0], temM[1], temM[2], temM[3], true);      //temp minus
     printButton("+", temP[0], temP[1], temP[2], temP[3], true);      //temp plus
@@ -2422,10 +2436,10 @@ void tempScreen(boolean refreshAll=false)
 /********** LED TESTING OPTIONS SCREEN ******** dispScreen = 4 ************************/
 void ledTestOptionsScreen()
 {
-  printHeader("LED Testing Options"); 
+  printHeader("LED Testing Options");
 
   myGLCD.setColor(64, 64, 64);                       //Draw Dividers in Grey
-  myGLCD.drawRect(0, 196, 319, 194);                 //Bottom Horizontal Divider   
+  myGLCD.drawRect(0, 196, 319, 194);                 //Bottom Horizontal Divider
   printButton("<< BACK >>", back[0], back[1], back[2], back[3], SMALL);
   printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
@@ -2437,23 +2451,23 @@ void ledTestOptionsScreen()
 
 /********** TEST LED ARRAY SCREEN ************* dispScreen = 5 ************************/
 void testArrayScreen(boolean refreshAll=false)
-{    
-  if (refreshAll) 
-  {  
+{
+  if (refreshAll)
+  {
     printHeader("Test LED Array Output Settings");
     myGLCD.fillRect (1, 15, 318, 37);       //clear "Test in Progress" Banner
 
     myGLCD.setColor(64, 64, 64);            //Draw Dividers in Grey
     myGLCD.drawRect(0, 196, 319, 194);      //Bottom Horizontal Divider
     printButton("<< BACK >>", back[0], back[1], back[2], back[3], SMALL);
-    printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);     
+    printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
     printButton ("", stsT[0], stsT[1], stsT[2], stsT[3], true);      //start/stop
     printButton ("-10s", tenM[0], tenM[1], tenM[2], tenM[3], true);  //-10s
     printButton ("+10s", tenP[0], tenP[1], tenP[2], tenP[3], true);  //+10s
     myGLCD.print("START", stsT[0]+6, stsT[1]+15);
-    myGLCD.print("TEST", stsT[0]+15, stsT[1]+40);   
-  } 
+    myGLCD.print("TEST", stsT[0]+15, stsT[1]+40);
+  }
   else
   {
     min_cnt=0;
@@ -2481,8 +2495,8 @@ void testArrayScreen(boolean refreshAll=false)
     {
       unsigned long currentMillis = millis();
 
-      if (myTouch.dataAvailable()) 
-      { 
+      if (myTouch.dataAvailable())
+      {
         processMyTouch();
       }
 
@@ -2491,7 +2505,7 @@ void testArrayScreen(boolean refreshAll=false)
         previousMillisLED = currentMillis;
 
         min_cnt++;
-        String oldvalue, twelveHR, hrs, HOURS, hrsPM, mins, Minutes, AMPM;
+        char oldvalue[9], twelveHR[9], hrs[12],  hrsPM[3],  Minutes[3], AMPM[2];
         int hours = min_cnt/60;
         int minut = min_cnt%60;
 
@@ -2500,100 +2514,116 @@ void testArrayScreen(boolean refreshAll=false)
         }                              //Adding the AM/PM suffix
         else{
           AMPM="PM";
-        }         
-
-        HOURS=String( hours);
-        hrsPM=String( hours-12);
+        }
+//        snprintf (HOURS,3,"%i", hours);
+//        HOURS=String( hours);
+        snprintf (hrsPM,3,"%i", hours-12);
+//        hrsPM=String( hours-12);
         if (hours==0){
-          hrs=String( 12);
-        }                             
-        else { 
+
+          hrs="12";
+        }
+        else {
           if ((hours>=1)&&(hours<=9)){
-            hrs=" "+HOURS;
+        	  snprintf (hrs,3," %i", hours);
+//            hrs=" "+HOURS;
           }      //keep hours in place
-          else { 
+          else {
             if ((hours>=13)&&(hours<=21)){
-              hrs=" " +hrsPM;
+            	 snprintf (hrs,3," %i", hrsPM);
+//              hrs=" " +hrsPM;
             } //convert to 12HR
-            else { 
+            else {
               if ((hours>=22)&&(hours<24)){
+//            	  snprintf (hrs,3,"%i", hrsPM);
                 hrs=hrsPM;
               }
-              else { 
+              else {
                 if (hours==24){
-                  hrs=String( 12);
-                }   
+                  hrs="12";
+                }
                 else{
-                  hrs=HOURS;
+                	 snprintf (hrs,3,"%i", hours);
+//                  hrs=HOURS;
                 }
               }
             }
           }
         }
-
-        mins=String( minut);                                            //add zero to minutes
+//        snprintf (mins,3,"%i", minut);
+//        mins=String( minut);                                            //add zero to minutes
         if ((minut>=0)&&(minut<=9)){
-          Minutes="0"+mins;
+        	 snprintf (Minutes,3,"0%i", minut);
+//          Minutes="0"+mins;
         }
         else {
-          Minutes=mins;
+        	snprintf (Minutes,3,"%i", minut);
+//          Minutes=mins;
         }
 
         oldvalue=twelveHR;
-        twelveHR=hrs+':'+Minutes;
+        snprintf (twelveHR,6,"%s:%s", hrs,Minutes);
+//        twelveHR=hrs+':'+Minutes;
         if ((oldvalue!=twelveHR)||refreshAll)
         {
-          char bufferCount[9];
-          twelveHR.toCharArray(bufferCount,9);
-          setFont(LARGE, 255, 255, 255, 0, 0, 0);               
-          myGLCD.print(bufferCount, 7, 55);
-          char bufferAMPM[3];
-          AMPM.toCharArray(bufferAMPM,3);
-          myGLCD.print(bufferAMPM, 90, 55);
+//          char bufferCount[9];
+//          twelveHR.toCharArray(bufferCount,9);
+          setFont(LARGE, 255, 255, 255, 0, 0, 0);
+          myGLCD.print(twelveHR, 7, 55);
+//          char bufferAMPM[3];
+//          AMPM.toCharArray(bufferAMPM,3);
+          myGLCD.print(AMPM, 90, 55);
         }
 
+        char sled[13], rled[13],wled[13], bled[13],rbled[13],uvled[13];
         setFont(SMALL, 0, 150, 0, 0, 0, 0);
-        String sled = "SUMP:  " + String(sled_out) + " " + " ";
-        char bufferS[11];
-        sled.toCharArray(bufferS, 11);
-        myGLCD.print(bufferS, 145, 55);
+        snprintf (sled,14,"SUMP:  %i   ", sled_out);
+//        String sled = "SUMP:  " + String(sled_out) + " " + " ";
+//        char bufferS[11];
+//        sled.toCharArray(bufferS, 11);
+        myGLCD.print(sled, 145, 55);
 
         setFont(SMALL, 255, 0, 0, 0, 0, 0);
-        String rled = "Red:   " + String(rled_out) + "  " + " ";
-        char bufferR[11];
-        rled.toCharArray(bufferR, 11);
-        myGLCD.print(bufferR, 145, 67);
+        snprintf (rled,14,"Red:   %i   ", rled_out);
+//        String rled = "Red:   " + String(rled_out) + "  " + " ";
+//        char bufferR[11];
+//        rled.toCharArray(bufferR, 11);
+        myGLCD.print(rled, 145, 67);
 
         setFont(SMALL, 255, 255, 255, 0, 0, 0);
-        String wled = "White: " + String(wled_out) + " " + " ";
-        char bufferW[11];
-        wled.toCharArray(bufferW, 11);
-        myGLCD.print(bufferW, 145, 79);
+        snprintf (wled,14,"White: %i   ", wled_out);
+//        String wled = "White: " + String(wled_out) + " " + " ";
+//        char bufferW[11];
+//        wled.toCharArray(bufferW, 11);
+        myGLCD.print(wled, 145, 79);
 
         setFont(SMALL, 9, 184, 255, 0, 0, 0);
-        String bled = "Blue:  " + String(bled_out) + " " + " ";      
-        char bufferB[11];
-        bled.toCharArray(bufferB, 11);
-        myGLCD.print(bufferB, 235, 55);      
+        snprintf (bled,14,"Blue:  %i   ", bled_out);
+//        String bled = "Blue:  " + String(bled_out) + " " + " ";
+//        char bufferB[11];
+//        bled.toCharArray(bufferB, 11);
+        myGLCD.print(bled, 235, 55);
 
         setFont(SMALL, 58, 95, 205, 0, 0, 0);
-        String rbled = "Royal: " + String(rbled_out) + "  " + " ";
-        char bufferRB[11];
-        rbled.toCharArray(bufferRB, 11);
-        myGLCD.print(bufferRB, 235, 67);
+        snprintf (rbled,14,"Royal: %i   ", rbled_out);
+//        String rbled = "Royal: " + String(rbled_out) + "  " + " ";
+//        char bufferRB[11];
+//        rbled.toCharArray(bufferRB, 11);
+        myGLCD.print(rbled, 235, 67);
 
         setFont(SMALL, 224, 102, 255, 0, 0, 0);
-        String uvled = "Ultra: " + String(uvled_out) + "  " + " ";
-        char bufferUV[11];
-        uvled.toCharArray(bufferUV, 11);
-        myGLCD.print(bufferUV, 235, 79);         
+        snprintf (uvled,14,"Ultra: %i   ", uvled_out);
+//        String uvled = "Ultra: " + String(uvled_out) + "  " + " ";
+//        char bufferUV[11];
+//        uvled.toCharArray(bufferUV, 11);
+        myGLCD.print(uvled, 235, 79);
 
         LED_levels_output();
         checkTempC();
         TimeDateBar();
       }
     }
-  } 
+  }
 }
 /*************************** END OF TEST LED ARRAY SCREEN *****************************/
 
@@ -2604,36 +2634,36 @@ void testIndLedScreen()
   printHeader("Test Individual LED Values (0--255)");
 
   setFont(SMALL, 255, 255, 255, 0, 0, 0);
-  myGLCD.print("LED OUTPUT %", 52, 20);    
+  myGLCD.print("LED OUTPUT %", 52, 20);
 
   drawBarGraph();
-  myGLCD.setColor(255, 255, 255);   
+  myGLCD.setColor(255, 255, 255);
   myGLCD.drawRect(30, 137, 165, 138);               //x-plane extended to include moon%
   myGLCD.setColor(176, 176, 176);
-  myGLCD.drawRect(142, 136, 154, 135);              //MOON %bar place holder     
+  myGLCD.drawRect(142, 136, 154, 135);              //MOON %bar place holder
 
   myGLCD.setColor(0, 150, 0);
   myGLCD.fillRoundRect(5, 148, 105, 168);
-  setFont(SMALL, 255, 255, 255, 0, 150, 0);      
+  setFont(SMALL, 255, 255, 255, 0, 150, 0);
   myGLCD.print("Sump:", 15, 152);                   //display SUMP LEDs output
   myGLCD.print("0", 67, 152);
 
   myGLCD.setColor(255, 0, 0);
   myGLCD.fillRoundRect(5, 174, 105, 194);
-  setFont(SMALL, 255, 255, 255, 255, 0, 0);   
-  myGLCD.print("Red:", 15, 178);                    //display Red LEDs output   
+  setFont(SMALL, 255, 255, 255, 255, 0, 0);
+  myGLCD.print("Red:", 15, 178);                    //display Red LEDs output
   myGLCD.print("0", 67, 178);
 
   myGLCD.setColor(255, 255, 255);
   myGLCD.fillRoundRect(5, 200, 105, 220);
-  setFont(SMALL, 0, 0, 0, 255, 255, 255);   
+  setFont(SMALL, 0, 0, 0, 255, 255, 255);
   myGLCD.print("White:", 15, 204);                  //display White LEDs output
   myGLCD.print("0", 67, 204);
 
   myGLCD.setColor(9, 184, 255);
   myGLCD.fillRoundRect(110, 148, 210, 168);
-  setFont(SMALL, 255, 255, 255, 9, 184, 255);   
-  myGLCD.print("Blue:", 120, 152);                  //display Blue LEDs output   
+  setFont(SMALL, 255, 255, 255, 9, 184, 255);
+  myGLCD.print("Blue:", 120, 152);                  //display Blue LEDs output
   myGLCD.print("0", 172, 152);
 
   myGLCD.setColor(58, 95, 205);
@@ -2644,17 +2674,17 @@ void testIndLedScreen()
 
   myGLCD.setColor(224, 102, 255);
   myGLCD.fillRoundRect(110, 200, 210, 220);
-  setFont(SMALL, 255, 255, 255, 224, 102, 255);   
-  myGLCD.print("Ultra:", 120, 204);                 //display UltraViolet LEDs output   
-  myGLCD.print("0", 172, 204);   
+  setFont(SMALL, 255, 255, 255, 224, 102, 255);
+  myGLCD.print("Ultra:", 120, 204);                 //display UltraViolet LEDs output
+  myGLCD.print("0", 172, 204);
 
-  myGLCD.setColor(176, 176, 176);  
+  myGLCD.setColor(176, 176, 176);
   myGLCD.fillRoundRect(215, 148, 315, 168);
-  setFont(SMALL, 0, 0, 0, 176, 176, 176);   
-  myGLCD.print("Lunar:", 225, 152);                 //display Lunar LEDs output   
+  setFont(SMALL, 0, 0, 0, 176, 176, 176);
+  myGLCD.print("Lunar:", 225, 152);                 //display Lunar LEDs output
   myGLCD.print("0", 277, 152);
 
-  myGLCD.setColor(0, 0, 0);  
+  myGLCD.setColor(0, 0, 0);
   myGLCD.drawRoundRect(215, 174, 315, 194);         //blank button
 
   myGLCD.drawRoundRect(215, 200, 315, 220);
@@ -2663,10 +2693,10 @@ void testIndLedScreen()
 
   myGLCD.setColor(255, 255, 255);                   //white Border Around Color Buttons
   for (int x=0; x<3; x++)
-  { 
+  {
     for (int y=0; y<3; y++)
-    { 
-      myGLCD.drawRoundRect((x*105)+5, (y*26)+148, (x*105)+105, (y*26)+168); 
+    {
+      myGLCD.drawRoundRect((x*105)+5, (y*26)+148, (x*105)+105, (y*26)+168);
     }
   }
 
@@ -2693,11 +2723,11 @@ void ledColorViewScreen()
   myGLCD.setColor(64, 64, 64);                      //Draw Dividers in Grey
   myGLCD.drawRect(0, 196, 319, 194);                //Bottom Horizontal Divider
   printButton("<< BACK >>", back[0], back[1], back[2], back[3], SMALL);
-  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL); 
+  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
   myGLCD.setColor(255, 255, 255);
   myGLCD.fillRoundRect(10, 20, 150, 50);
-  setFont(SMALL, 0, 0, 0, 255, 255, 255);   
+  setFont(SMALL, 0, 0, 0, 255, 255, 255);
   myGLCD.print("White", 60, 29);
 
   myGLCD.setColor(58, 95, 205);
@@ -2707,38 +2737,38 @@ void ledColorViewScreen()
 
   myGLCD.setColor(255, 0, 0);
   myGLCD.fillRoundRect(10, 100, 150, 130);
-  setFont(SMALL, 255, 255, 255, 255, 0, 0);   
+  setFont(SMALL, 255, 255, 255, 255, 0, 0);
   myGLCD.print("Red", 68, 109);
 
-  myGLCD.setColor(176, 176, 176);  
+  myGLCD.setColor(176, 176, 176);
   myGLCD.fillRoundRect(90, 140, 230, 170);
-  setFont(SMALL, 0, 0, 0, 176, 176, 176);   
+  setFont(SMALL, 0, 0, 0, 176, 176, 176);
   myGLCD.print("Lunar", 140, 149);
 
   myGLCD.setColor(0, 150, 0);
   myGLCD.fillRoundRect(170, 100, 310, 130);
-  setFont(SMALL, 255, 255, 255, 0, 150, 0);      
+  setFont(SMALL, 255, 255, 255, 0, 150, 0);
   myGLCD.print("Sump", 224, 109);
 
   myGLCD.setColor(224, 102, 255);
   myGLCD.fillRoundRect(170, 60, 310, 90);
-  setFont(SMALL, 255, 255, 255, 224, 102, 255);   
+  setFont(SMALL, 255, 255, 255, 224, 102, 255);
   myGLCD.print("Ultraviolet", 196, 69);
 
   myGLCD.setColor(9, 184, 255);
   myGLCD.fillRoundRect(170, 20, 310, 50);
-  setFont(SMALL, 255, 255, 255, 9, 184, 255);   
+  setFont(SMALL, 255, 255, 255, 9, 184, 255);
   myGLCD.print("Blue", 224, 29);
 
   myGLCD.setColor(255, 255, 255);
   for (int x=0; x<2; x++)
-  { 
+  {
     for (int y=0; y<3; y++)
-    { 
-      myGLCD.drawRoundRect((x*160)+10, (y*40)+20, (x*160)+150, (y*40)+50); 
+    {
+      myGLCD.drawRoundRect((x*160)+10, (y*40)+20, (x*160)+150, (y*40)+50);
     }
   }
-  myGLCD.drawRoundRect(90, 140, 230, 170); 
+  myGLCD.drawRoundRect(90, 140, 230, 170);
 }
 /************************** END OF LED COLOR CHOICES SCREEN ***************************/
 
@@ -2767,7 +2797,7 @@ void ledValuesScreen()
     for (int i; i<96; i++)
       tled[i] = rled[i];
     printHeader("Red LED Output Values");
-  }  
+  }
   if (COLOR==5) {
     for (int i; i<96; i++)
       tled[i] = uvled[i];
@@ -2783,12 +2813,12 @@ void ledValuesScreen()
     printHeader("View/Change Moon LED Max Output");
     setFont(LARGE, 255, 255, 255, 0, 0, 0);
     myGLCD.print("Max Illumination", CENTER, 45);
-    myGLCD.print("at Full Moon", CENTER, 65);    
+    myGLCD.print("at Full Moon", CENTER, 65);
     myGLCD.printNumI(tMI, CENTER, 120);
     setFont(SMALL, 255, 255, 255, 0, 0, 0);
     myGLCD.print("(0--255)", CENTER, 90);
-    myGLCD.print("-1", 95, 145);        
-    myGLCD.print("+5", 210, 145);    
+    myGLCD.print("-1", 95, 145);
+    myGLCD.print("+5", 210, 145);
 
     printButton("-", miM[0], miM[1], miM[2], miM[3], true);      //Max Illum. minus
     printButton("+", miP[0], miP[1], miP[2], miP[3], true);      //Max Illum. plus
@@ -2796,28 +2826,28 @@ void ledValuesScreen()
     myGLCD.drawRect(0, 196, 319, 194);
     printButton("MORE COLORS", back[0], back[1], back[2], back[3], SMALL);
     printButton("SAVE", prSAVE[0], prSAVE[1], prSAVE[2], prSAVE[3], SMALL);
-    printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);    
-  }  
+    printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
+  }
 
   if (COLOR!=7) {
     setFont(SMALL, 255, 255, 255, 0, 0, 0);
-    for (int i=0; i<12; i++) 
+    for (int i=0; i<12; i++)
     {
       myGLCD.setColor(0, 255, 255);
       myGLCD.printNumI((i*2), (i*26)+13, 14);
       myGLCD.printNumI(((i*2)+1), (i*26)+13, 24);
-      for (int j=0; j<8; j++) 
+      for (int j=0; j<8; j++)
       {
-        a= (i*8)+j;         
+        a= (i*8)+j;
         myGLCD.setColor(255, 255, 255);
         myGLCD.printNumI(tled[a], (i*26)+7, (j*18)+39);
         myGLCD.setColor(100, 100, 100);
         myGLCD.drawRect((i*26)+4, (j*18)+35, (i*26)+30, (j*18)+53);
       }
     }
-    myGLCD.setColor(64, 64, 64);       
-    myGLCD.drawRect(0, 196, 319, 194); 
-    printButton("MORE COLORS", back[0], back[1], back[2], back[3], SMALL);   
+    myGLCD.setColor(64, 64, 64);
+    myGLCD.drawRect(0, 196, 319, 194);
+    printButton("MORE COLORS", back[0], back[1], back[2], back[3], SMALL);
     printButton("CHANGE", ledChV[0], ledChV[1], ledChV[2], ledChV[3], SMALL);
     printButton("SAVE", eeprom[0], eeprom[1], eeprom[2], eeprom[3]);
   }
@@ -2829,35 +2859,35 @@ void ledValuesScreen()
 void ledChangeScreen()
 {
   if (COLOR==1)
-  { 
-    printHeader("Change White LED Output Values"); 
+  {
+    printHeader("Change White LED Output Values");
   }
   if (COLOR==2)
-  { 
-    printHeader("Change Blue LED Output Values"); 
-  }  
+  {
+    printHeader("Change Blue LED Output Values");
+  }
   if (COLOR==3)
-  { 
-    printHeader("Change Royal Blue LED Output Values"); 
+  {
+    printHeader("Change Royal Blue LED Output Values");
   }
   if (COLOR==4)
-  { 
-    printHeader("Change Red LED Output Values"); 
-  }      
+  {
+    printHeader("Change Red LED Output Values");
+  }
   if (COLOR==5)
-  { 
-    printHeader("Change Ultraviolet LED Output Values"); 
-  }  
+  {
+    printHeader("Change Ultraviolet LED Output Values");
+  }
   if (COLOR==6)
-  { 
-    printHeader("Change Sump LED Output Values"); 
+  {
+    printHeader("Change Sump LED Output Values");
   }
 
-  myGLCD.setColor(64, 64, 64);       
-  myGLCD.drawRect(0, 196, 319, 194); 
-  printButton("MENU", back[0], back[1], back[2], back[3], SMALL);  
+  myGLCD.setColor(64, 64, 64);
+  myGLCD.drawRect(0, 196, 319, 194);
+  printButton("MENU", back[0], back[1], back[2], back[3], SMALL);
   printButton("OK", prSAVE[0], prSAVE[1], prSAVE[2], prSAVE[3], SMALL);
-  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);    
+  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
   setFont(SMALL, 0, 255, 255, 0,0,0);
   for (int i=0; i<12; i++) {
@@ -2886,29 +2916,29 @@ void WaveMakerButtons()
   myGLCD.fillRoundRect(5, 46, 155, 66);        //Feeding Mode Button
   myGLCD.fillRoundRect(165, 46, 315, 66);      //Turn Pumps ON/OFF Button
   setFont(SMALL, 255, 255, 255, 255, 0, 0);
-  myGLCD.print("Alternating Mode", 16, 24); 
+  myGLCD.print("Alternating Mode", 16, 24);
   myGLCD.print("Synchronous Mode", 176, 24);
   myGLCD.print("Feeding Mode", 32, 50);
   myGLCD.print("Turn Pumps OFF", 184, 50);
 }
 
 void WaveMakerScreen()
-{ 
+{
   printHeader("View/Change Wavemaker Settings");
 
   myGLCD.setColor(64, 64, 64);                 //Draw Dividers in Grey
   myGLCD.drawRect(0, 70, 319, 72);             //Top Horizontal Divider
   myGLCD.drawRect(0, 196, 319, 194);           //Bottom Horizontal Divider
   printButton("<< BACK >>", back[0], back[1], back[2], back[3], SMALL);
-  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL); 
+  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
   setFont(LARGE, 255, 255, 255, 0, 0, 0);
   myGLCD.print("Current Status:", CENTER, 80);
-} 
+}
 
 void viewWaveTimes()
 {
-  setFont(SMALL, 0, 255, 0, 0, 0, 0);     
+  setFont(SMALL, 0, 255, 0, 0, 0, 0);
   int dynamicXm=135;
   if ((MIN1<=99) && (MIN1>=10)) {
     dynamicXm+=8;
@@ -2921,7 +2951,7 @@ void viewWaveTimes()
   if (SEC1<=9) {
     dynamicXs+=8;
   }
-  myGLCD.printNumI(SEC1, dynamicXs, minY1);     
+  myGLCD.printNumI(SEC1, dynamicXs, minY1);
   dynamicXm=135;
   if ((MIN2<=99) && (MIN2>=10)) {
     dynamicXm+=8;
@@ -2934,7 +2964,7 @@ void viewWaveTimes()
   if (SEC2<=9) {
     dynamicXs+=8;
   }
-  myGLCD.printNumI(SEC2, dynamicXs, minY2);     
+  myGLCD.printNumI(SEC2, dynamicXs, minY2);
 }
 
 void WaveMakerStatusScreen()
@@ -2948,19 +2978,19 @@ void WaveMakerStatusScreen()
   {
     setFont(LARGE, 255, 0, 0, 0, 0, 0);
     myGLCD.print("No Mode Saved!", CENTER, 100);
-    setFont(SMALL, 255, 0, 0, 0, 0, 0);     
+    setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("Make a selection above. Choose", CENTER, 130);
     myGLCD.print("either Alternating or Synchronous", CENTER, 142);
-    myGLCD.print("then save your settings.", CENTER, 154);          
-  } 
+    myGLCD.print("then save your settings.", CENTER, 154);
+  }
   else
 
       if (WAVE==1)
     {
       myGLCD.setColor(0, 255, 0);
-      myGLCD.fillRoundRect(5, 20, 155, 40);  
+      myGLCD.fillRoundRect(5, 20, 155, 40);
       setFont(SMALL, 0, 0, 0, 0, 255, 0);
-      myGLCD.print("Alternating Mode", 16, 24); 
+      myGLCD.print("Alternating Mode", 16, 24);
       myGLCD.setColor(255, 255, 255);
       myGLCD.drawRoundRect(5, 20, 155, 40);
 
@@ -2968,23 +2998,23 @@ void WaveMakerStatusScreen()
       myGLCD.print("Alternating Flow", CENTER, 100);
 
       myGLCD.print("Pump1->", 15, 140);
-      myGLCD.print("min", 167, 140); 
-      myGLCD.print("sec", 255, 140); 
-      myGLCD.print("Pump2->", 15, 160);    
-      myGLCD.print("min", 167, 160); 
-      myGLCD.print("sec", 255, 160);     
+      myGLCD.print("min", 167, 140);
+      myGLCD.print("sec", 255, 140);
+      myGLCD.print("Pump2->", 15, 160);
+      myGLCD.print("min", 167, 160);
+      myGLCD.print("sec", 255, 160);
 
       MIN1=Pump1m, SEC1=Pump1s, MIN2=Pump2m, SEC2=Pump2s;
       minY1=144, minY2=164;
       viewWaveTimes();
-    } 
+    }
     else
 
 
         if (WAVE==2)
       {
         myGLCD.setColor(0, 255, 0);
-        myGLCD.fillRoundRect(165, 20, 315, 40);  
+        myGLCD.fillRoundRect(165, 20, 315, 40);
         setFont(SMALL, 0, 0, 0, 0, 255, 0);
         myGLCD.print("Synchronous Mode", 176, 24);
         myGLCD.setColor(255, 255, 255);
@@ -2993,39 +3023,39 @@ void WaveMakerStatusScreen()
         setFont(LARGE, 0, 255, 0, 0, 0, 0);
         myGLCD.print("Synchronous Flow", CENTER, 100);
 
-        if (Synch==1) 
-        { 
+        if (Synch==1)
+        {
           myGLCD.print("Constantly ON", CENTER, 116);
           setFont(SMALL, 255, 0, 0, 0, 0, 0);
           myGLCD.print("Both powerheads are ON constantly.", CENTER, 144);
-          myGLCD.print("To change to Pulsating Mode, push", CENTER, 156);  
-          myGLCD.print("the Synchronous Mode button above", CENTER, 168);         
-        }     
-        if (Synch==2) 
-        { 
+          myGLCD.print("To change to Pulsating Mode, push", CENTER, 156);
+          myGLCD.print("the Synchronous Mode button above", CENTER, 168);
+        }
+        if (Synch==2)
+        {
           myGLCD.print("Pulsating Mode", CENTER, 116);
 
           myGLCD.print("ON for", 15, 146);
-          myGLCD.print("min", 167, 146); 
-          myGLCD.print("sec", 255, 146); 
-          myGLCD.print("OFF for", 15, 166);    
-          myGLCD.print("min", 167, 166); 
-          myGLCD.print("sec", 255, 166);     
+          myGLCD.print("min", 167, 146);
+          myGLCD.print("sec", 255, 146);
+          myGLCD.print("OFF for", 15, 166);
+          myGLCD.print("min", 167, 166);
+          myGLCD.print("sec", 255, 166);
 
           MIN1=OnForTm, SEC1=OnForTs, MIN2=OffForTm, SEC2=OffForTs;
           minY1=150, minY2=170;
           viewWaveTimes();
         }
-      } 
+      }
       else
 
 
           if (WAVE==3)
         {
           myGLCD.setColor(0, 255, 0);
-          myGLCD.fillRoundRect(165, 46, 315, 66);  
+          myGLCD.fillRoundRect(165, 46, 315, 66);
           setFont(SMALL, 0, 0, 0, 0, 255, 0);
-          myGLCD.print("Turn Pumps ON", 188, 50);      
+          myGLCD.print("Turn Pumps ON", 188, 50);
           myGLCD.setColor(255, 255, 255);
           myGLCD.drawRoundRect(165, 46, 315, 66);
 
@@ -3033,84 +3063,84 @@ void WaveMakerStatusScreen()
           myGLCD.print("Powerheads are OFF", CENTER, 100);
           setFont(SMALL, 0, 255, 0, 0, 0, 0);
           myGLCD.print("To turn the powerheads back ON", CENTER, 125);
-          if (MODE==1) { 
+          if (MODE==1) {
             myGLCD.print("and resume in Alternating Mode,", CENTER, 137);
-          } 
+          }
           else
-            if (MODE==2) { 
+            if (MODE==2) {
               myGLCD.print("and resume in Synchronous Mode,", CENTER, 137);
             }
-          myGLCD.print("push the Turn Pumps ON button above", CENTER, 149);     
+          myGLCD.print("push the Turn Pumps ON button above", CENTER, 149);
 
           waveMakerOff=true;
           digitalWrite(WaveMakerTop, LOW);
-          digitalWrite(WaveMakerBottom, LOW);    
-        }  
+          digitalWrite(WaveMakerBottom, LOW);
+        }
 
   myGLCD.setColor(255, 255, 255);
   for (int x=0; x<2; x++)
-  { 
+  {
     for (int y=0; y<2; y++)
-    { 
-      myGLCD.drawRoundRect((x*160)+5, (y*26)+20, (x*160)+155, (y*26)+40); 
+    {
+      myGLCD.drawRoundRect((x*160)+5, (y*26)+20, (x*160)+155, (y*26)+40);
     }
-  }  
+  }
 
   if (WAVE==4)
   {
     myGLCD.setColor(0, 255, 0);
-    myGLCD.fillRoundRect(5, 46, 155, 66);  
+    myGLCD.fillRoundRect(5, 46, 155, 66);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("Feeding Mode", 32, 50);
     myGLCD.setColor(255, 255, 255);
     for (int x=0; x<2; x++)
-    { 
+    {
       for (int y=0; y<2; y++)
-      { 
-        myGLCD.drawRoundRect((x*160)+5, (y*26)+20, (x*160)+155, (y*26)+40); 
+      {
+        myGLCD.drawRoundRect((x*160)+5, (y*26)+20, (x*160)+155, (y*26)+40);
       }
-    }  
+    }
 
     setFont(LARGE, 0, 255, 0, 0, 0, 0);
     myGLCD.print("Feeding", CENTER, 100);
     setFont(SMALL, 0, 255, 0, 0, 0, 0);
     myGLCD.print("Powerheads will remain OFF", CENTER, 125);
     myGLCD.print("for 5 minutes", CENTER, 137);
-    if (MODE==1) { 
+    if (MODE==1) {
       myGLCD.print("Alternating Mode will resume in:", CENTER, 155);
-    } 
+    }
     else
-      if (MODE==2) { 
+      if (MODE==2) {
         myGLCD.print("Synchronous Mode will resume in:", CENTER, 155);
       }
 
-    waveMakerOff=true;   
+    waveMakerOff=true;
     digitalWrite(WaveMakerTop, LOW);
-    digitalWrite(WaveMakerBottom, LOW);    
+    digitalWrite(WaveMakerBottom, LOW);
   }
   while (WAVE==4)
   {
     unsigned long currentMillis = millis();
 
-    if (myTouch.dataAvailable())  
-    { 
+    if (myTouch.dataAvailable())
+    {
       processMyTouch();
     }
 
-    if(currentMillis - previousMillisCt >= intervalCt) 
+    if(currentMillis - previousMillisCt >= intervalCt)
     {
-      previousMillisCt = currentMillis;   
+      previousMillisCt = currentMillis;
       if(countDown>=0)
       {
-        if (countDown<=30) 
-        { 
+        if (countDown<=30)
+        {
           myGLCD.setColor(0, 0, 0);
           myGLCD.fillRect(128, 173, 192, 189);
         }
         MIN_O= (countDown / 60) % 10;
         SEC_T= (countDown % 60) / 10;
         SEC_O= (countDown % 60) % 10;
-        setFont(LARGE, 255, 0, 0, 0, 0, 0);       
+        setFont(LARGE, 255, 0, 0, 0, 0, 0);
         myGLCD.printNumI(MIN_O, 128, 173);
         myGLCD.print(":", 144, 173);
         myGLCD.printNumI(SEC_T, 160, 173);
@@ -3118,14 +3148,14 @@ void WaveMakerStatusScreen()
         if(countDown==0)
         {
           WAVE=MODE;
-          WaveMakerStatusScreen(); 
+          WaveMakerStatusScreen();
         }
         countDown--;
         checkTempC();
-        TimeDateBar();             
+        TimeDateBar();
       }
-      waveMakerOff=false;            
-    }   
+      waveMakerOff=false;
+    }
   }
 }
 /******************************* END OF WAVEMAKER SCREEN ******************************/
@@ -3133,7 +3163,7 @@ void WaveMakerStatusScreen()
 
 /******** WAVEMAKER SETTINGS SCREEN ************** dispScreen = 11 ********************/
 void WaveMakerSettingsScreen()
-{ 
+{
   myGLCD.setColor(64, 64, 64);                 //Draw Dividers in Grey
   myGLCD.drawRect(0, 196, 319, 194);           //Bottom Horizontal Divider
 
@@ -3144,25 +3174,25 @@ void WaveMakerSettingsScreen()
 
   setFont(SMALL, 255, 255, 255, 0, 0, 255);
   myGLCD.print("<< BACK >>", 15, 204);
-  myGLCD.print("TEST", 144, 204);  
+  myGLCD.print("TEST", 144, 204);
   myGLCD.print("SAVE", 241, 204);
 
   myGLCD.setColor(255, 255, 255);
   for (int x=0; x<3; x++)
-  { 
-    myGLCD.drawRoundRect((x*105)+5, 200, (x*105)+105, 220); 
-  }    
+  {
+    myGLCD.drawRoundRect((x*105)+5, 200, (x*105)+105, 220);
+  }
 
 
   setFont(LARGE, 255, 255, 255, 0, 0, 0);
-  if (WAVE==1) 
-  { 
+  if (WAVE==1)
+  {
     printHeader("Alternating Flow Mode Settings");
     myGLCD.setColor(64, 64, 64);                 //Draw Dividers in Grey
-    myGLCD.drawRect(0, 38, 319, 40);             //Top Horizontal Divider    
-    myGLCD.drawRect(0, 115, 319, 117);           //Middle Horizontal Divider          
+    myGLCD.drawRect(0, 38, 319, 40);             //Top Horizontal Divider
+    myGLCD.drawRect(0, 115, 319, 117);           //Middle Horizontal Divider
     setFont(SMALL, 255, 0, 0, 0, 0, 0);
-    myGLCD.print("Set how long each powerhead will be ON", CENTER, 20); 
+    myGLCD.print("Set how long each powerhead will be ON", CENTER, 20);
     setFont(SMALL, 0, 255, 0, 0, 0, 0);
     myGLCD.print("POWERHEAD 1", CENTER, 50);
     myGLCD.print("POWERHEAD 2", CENTER, 127);
@@ -3172,75 +3202,75 @@ void WaveMakerSettingsScreen()
     myGLCD.print("Minutes", 57, 177);
     myGLCD.print("Seconds", 211, 177);
 
-    Min1=Pump1m, Sec1=Pump1s, Min2=Pump2m, Sec2=Pump2s;     
+    Min1=Pump1m, Sec1=Pump1s, Min2=Pump2m, Sec2=Pump2s;
     viewWaveTimesPage();
   }
 
-  if (WAVE==2) 
+  if (WAVE==2)
   {
     printHeader("Synchronous Flow Mode Settings");
     myGLCD.setColor(64, 64, 64);                 //Draw Dividers in Grey
-    myGLCD.drawRect(0, 44, 319, 46);             //Top Horizontal Divider     
-  }  
+    myGLCD.drawRect(0, 44, 319, 46);             //Top Horizontal Divider
+  }
 }
 
 void synchronousSynch()
 {
   myGLCD.setColor(0, 0, 0);                       //Clear Status Area
-  myGLCD.fillRect( 1, 47, 318, 193);  
+  myGLCD.fillRect( 1, 47, 318, 193);
   myGLCD.setColor(255, 0, 0);
   myGLCD.fillRoundRect(5, 20, 155, 40);           //Constantly ON Mode Button
   myGLCD.fillRoundRect(165, 20, 315, 40);         //Pulsating Mode Mode Button
   setFont(SMALL, 255, 255, 255, 255, 0, 0);
-  myGLCD.print("Constantly ON", 28, 24); 
-  myGLCD.print("Pulsating Mode", 184, 24);  
+  myGLCD.print("Constantly ON", 28, 24);
+  myGLCD.print("Pulsating Mode", 184, 24);
   for (int x=0; x<2; x++)
-  { 
-    myGLCD.drawRoundRect((x*160)+5, 20, (x*160)+155, 40); 
-  } 
+  {
+    myGLCD.drawRoundRect((x*160)+5, 20, (x*160)+155, 40);
+  }
 
   if (Synch==0)
-  {  
+  {
     setFont(LARGE, 255, 0, 0, 0, 0, 0);
     myGLCD.print("NO Synchronous Mode", CENTER, 80);
-    myGLCD.print("has been selected!", CENTER, 100);       
-    setFont(SMALL, 255, 0, 0, 0, 0, 0);     
+    myGLCD.print("has been selected!", CENTER, 100);
+    setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("Choose either Constantly ON or", CENTER, 130);
-    myGLCD.print("Pulsating Mode. Afterwards, you", CENTER, 142);       
-    myGLCD.print("can alter the settings.", CENTER, 154);                
-  } 
+    myGLCD.print("Pulsating Mode. Afterwards, you", CENTER, 142);
+    myGLCD.print("can alter the settings.", CENTER, 154);
+  }
   else
 
       if (Synch==1)
-    {  
+    {
       myGLCD.setColor(0, 255, 0);
-      myGLCD.fillRoundRect(5, 20, 155, 40);  
+      myGLCD.fillRoundRect(5, 20, 155, 40);
       setFont(SMALL, 0, 0, 0, 0, 255, 0);
-      myGLCD.print("Constantly ON", 28, 24); 
+      myGLCD.print("Constantly ON", 28, 24);
       myGLCD.setColor(255, 255, 255);
       myGLCD.drawRoundRect(5, 20, 155, 40);
 
       setFont(LARGE, 0, 255, 0, 0, 0, 0);
       myGLCD.print("Constantly ON Mode", CENTER, 80);
-      myGLCD.print("has been selected!", CENTER, 100);       
-      setFont(SMALL, 255, 0, 0, 0, 0, 0);     
+      myGLCD.print("has been selected!", CENTER, 100);
+      setFont(SMALL, 255, 0, 0, 0, 0, 0);
       myGLCD.print("Both powerheads will remain", CENTER, 130);
-      myGLCD.print("ON constantly. To change to", CENTER, 142);       
-      myGLCD.print("Pulsating Mode select it above.", CENTER, 154);             
-    } 
+      myGLCD.print("ON constantly. To change to", CENTER, 142);
+      myGLCD.print("Pulsating Mode select it above.", CENTER, 154);
+    }
     else
 
         if (Synch==2)
-      {  
+      {
         myGLCD.setColor(0, 255, 0);
-        myGLCD.fillRoundRect(165, 20, 315, 40);  
+        myGLCD.fillRoundRect(165, 20, 315, 40);
         setFont(SMALL, 0, 0, 0, 0, 255, 0);
         myGLCD.print("Pulsating Mode", 184, 24);
         myGLCD.setColor(255, 255, 255);
         myGLCD.drawRoundRect(165, 20, 315, 40);
 
         myGLCD.setColor(64, 64, 64);                 //Draw Dividers in Grey
-        myGLCD.drawRect(0, 120, 319, 122);           //Middle Horizontal Divider          
+        myGLCD.drawRect(0, 120, 319, 122);           //Middle Horizontal Divider
         setFont(SMALL, 0, 255, 0, 0, 0, 0);
         myGLCD.print("POWERHEADS WIll RUN FOR", CENTER, 50);
         myGLCD.print("POWERHEADS WILL STOP FOR", CENTER, 127);
@@ -3250,101 +3280,101 @@ void synchronousSynch()
         myGLCD.print("Minutes", 57, 177);
         myGLCD.print("Seconds", 211, 177);
 
-        Min1=OnForTm, Sec1=OnForTs, Min2=OffForTm, Sec2=OffForTs;     
-        viewWaveTimesPage();     
+        Min1=OnForTm, Sec1=OnForTs, Min2=OffForTm, Sec2=OffForTs;
+        viewWaveTimesPage();
       }
 }
 
 void viewWaveTimesPage()
 {
   setFont(LARGE, 255, 255, 255, 0, 0, 0);
-  if (Min1==0) { 
-    myGLCD.print("000", 59, 75); 
+  if (Min1==0) {
+    myGLCD.print("000", 59, 75);
   }
-  if ((Min1>=1) && (Min1<=9)) 
-  { 
-    myGLCD.print("00", 59, 75); 
+  if ((Min1>=1) && (Min1<=9))
+  {
+    myGLCD.print("00", 59, 75);
     myGLCD.printNumI(Min1, 91, 75);
   }
-  if ((Min1>=10) && (Min1<=99)) 
-  { 
-    myGLCD.print("0", 59, 75); 
+  if ((Min1>=10) && (Min1<=99))
+  {
+    myGLCD.print("0", 59, 75);
     myGLCD.printNumI(Min1, 75, 75);
   }
-  if (Min1>=100) { 
+  if (Min1>=100) {
     myGLCD.printNumI(Min1, 59, 75);
   }
 
-  if (Sec1==0) { 
-    myGLCD.print("00", 221, 75); 
+  if (Sec1==0) {
+    myGLCD.print("00", 221, 75);
   }
-  if ((Sec1>=1) && (Sec1<=9)) 
-  { 
-    myGLCD.print("0", 221, 75); 
+  if ((Sec1>=1) && (Sec1<=9))
+  {
+    myGLCD.print("0", 221, 75);
     myGLCD.printNumI(Sec1, 237, 75);
   }
-  if (Sec1>=10) { 
+  if (Sec1>=10) {
     myGLCD.printNumI(Sec1, 221, 75);
   }
 
-  if (Min2==0) { 
-    myGLCD.print("000", 59, 152); 
+  if (Min2==0) {
+    myGLCD.print("000", 59, 152);
   }
-  if ((Min2>=1) && (Min2<=9)) 
-  { 
-    myGLCD.print("00", 59, 152); 
+  if ((Min2>=1) && (Min2<=9))
+  {
+    myGLCD.print("00", 59, 152);
     myGLCD.printNumI(Min2, 91, 152);
   }
-  if ((Min2>=10) && (Min2<=99)) 
-  { 
-    myGLCD.print("0", 59, 152); 
+  if ((Min2>=10) && (Min2<=99))
+  {
+    myGLCD.print("0", 59, 152);
     myGLCD.printNumI(Min2, 75, 152);
   }
-  if (Min2>=100) { 
+  if (Min2>=100) {
     myGLCD.printNumI(Min2, 59, 152);
   }
 
-  if (Sec2==0) { 
-    myGLCD.print("00", 221, 152); 
+  if (Sec2==0) {
+    myGLCD.print("00", 221, 152);
   }
-  if ((Sec2>=1) && (Sec2<=9)) 
-  { 
-    myGLCD.print("0", 221, 152); 
+  if ((Sec2>=1) && (Sec2<=9))
+  {
+    myGLCD.print("0", 221, 152);
     myGLCD.printNumI(Sec2, 237, 152);
   }
-  if (Sec2>=10) { 
+  if (Sec2>=10) {
     myGLCD.printNumI(Sec2, 221, 152);
   }
 
   printButton("-", pump1Mm[0], pump1Mm[1], pump1Mm[2], pump1Mm[3], LARGE);
-  printButton("+", pump1Mp[0], pump1Mp[1], pump1Mp[2], pump1Mp[3], LARGE);      
+  printButton("+", pump1Mp[0], pump1Mp[1], pump1Mp[2], pump1Mp[3], LARGE);
   printButton("-", pump1Sm[0], pump1Sm[1], pump1Sm[2], pump1Sm[3], LARGE);
-  printButton("+", pump1Sp[0], pump1Sp[1], pump1Sp[2], pump1Sp[3], LARGE);      
+  printButton("+", pump1Sp[0], pump1Sp[1], pump1Sp[2], pump1Sp[3], LARGE);
   printButton("-", pump2Mm[0], pump2Mm[1], pump2Mm[2], pump2Mm[3], LARGE);
-  printButton("+", pump2Mp[0], pump2Mp[1], pump2Mp[2], pump2Mp[3], LARGE);      
+  printButton("+", pump2Mp[0], pump2Mp[1], pump2Mp[2], pump2Mp[3], LARGE);
   printButton("-", pump2Sm[0], pump2Sm[1], pump2Sm[2], pump2Sm[3], LARGE);
-  printButton("+", pump2Sp[0], pump2Sp[1], pump2Sp[2], pump2Sp[3], LARGE);  
+  printButton("+", pump2Sp[0], pump2Sp[1], pump2Sp[2], pump2Sp[3], LARGE);
 }
 
 void waveModePlusMinus()
 {
-  setFont(LARGE, 255, 255, 255, 0, 0, 0);  
-  if ((y>=70) && (y<=95))                        //First Row   
+  setFont(LARGE, 255, 255, 255, 0, 0, 0);
+  if ((y>=70) && (y<=95))                        //First Row
   {
     if ((x>=21) && (x<=46))                     //Pump 1 Minute Minus
     {
       waitForIt(21, 70, 46, 95);
       Min1 -= 1;
       if ((min1X>=10) && (Min1<=99)) {
-        min1X=75; 
+        min1X=75;
         myGLCD.print("0", 59, 75);
       }
       if ((Min1<=9) && (Min1>0)) {
-        min1X=91; 
+        min1X=91;
         myGLCD.print("00", 59, 75);
       }
       if (Min1<=0) {
-        Min1=0; 
+        Min1=0;
         myGLCD.print("0", 91, 75);
       }
       setFont(LARGE, 255, 255, 255, 0, 0, 0);
@@ -3365,7 +3395,7 @@ void waveModePlusMinus()
       }
       if (Min1>=999) {
         Min1=999;
-      }             
+      }
       setFont(LARGE, 255, 255, 255, 0, 0, 0);
       myGLCD.printNumI(Min1, min1X, 75);
     }
@@ -3377,11 +3407,11 @@ void waveModePlusMinus()
         sec1X=221;
       }
       if ((Sec1<=9) && (Sec1>0)) {
-        sec1X=237; 
+        sec1X=237;
         myGLCD.print("0", 221, 75);
       }
       if (Sec1<=0) {
-        Sec1=0; 
+        Sec1=0;
         myGLCD.print("0", 237, 75);
       }
       setFont(LARGE, 255, 255, 255, 0, 0, 0);
@@ -3399,7 +3429,7 @@ void waveModePlusMinus()
       }
       if (Sec1>=59) {
         Sec1=59;
-      }             
+      }
       setFont(LARGE, 255, 255, 255, 0, 0, 0);
       myGLCD.printNumI(Sec1, sec1X, 75);
     }
@@ -3412,15 +3442,15 @@ void waveModePlusMinus()
       waitForIt(21, 147, 46, 172);
       Min2 -= 1;
       if ((min2X>=10) && (Min2<=99)) {
-        min2X=75; 
+        min2X=75;
         myGLCD.print("0", 59, 152);
       }
       if ((Min2<=9) && (Min2>0)) {
-        min2X=91; 
+        min2X=91;
         myGLCD.print("00", 59, 152);
       }
       if (Min2<=0) {
-        Min2=0; 
+        Min2=0;
         myGLCD.print("0", 91, 152);
       }
       setFont(LARGE, 255, 255, 255, 0, 0, 0);
@@ -3441,7 +3471,7 @@ void waveModePlusMinus()
       }
       if (Min2>=999) {
         Min2=999;
-      }             
+      }
       setFont(LARGE, 255, 255, 255, 0, 0, 0);
       myGLCD.printNumI(Min2, min2X, 152);
     }
@@ -3453,16 +3483,16 @@ void waveModePlusMinus()
         sec2X=221;
       }
       if ((Sec2<=9) && (Sec2>0)) {
-        sec2X=237; 
+        sec2X=237;
         myGLCD.print("0", 221, 152);
       }
       if (Sec2<=0) {
-        Sec2=0; 
+        Sec2=0;
         myGLCD.print("0", 237, 152);
       }
       setFont(LARGE, 255, 255, 255, 0, 0, 0);
       myGLCD.printNumI(Sec2, sec2X, 152);
-    } 
+    }
     if ((x>=274) && (x<=299))                      //Pump 2 Second Plus
     {
       waitForIt(274, 147, 299, 172);
@@ -3475,10 +3505,10 @@ void waveModePlusMinus()
       }
       if (Sec2>=59) {
         Sec2=59;
-      }             
+      }
       setFont(LARGE, 255, 255, 255, 0, 0, 0);
       myGLCD.printNumI(Sec2, sec2X, 152);
-    }  
+    }
   }
 }
 /************************** END OF WAVEMAKER SETTINGS SCREEN **************************/
@@ -3487,25 +3517,25 @@ void waveModePlusMinus()
 /******** GENERAL SETTINGS SCREEN ************* dispScreen = 12 ***********************/
 void generalSettingsScreen()
 {
-  printHeader("View/Change General Settings");  
+  printHeader("View/Change General Settings");
 
   myGLCD.setColor(64, 64, 64);
   myGLCD.drawRect(0, 196, 319, 194);
   for (int x=0; x<4; x++)
-  { 
-    myGLCD.drawLine(0, (x*31)+70, 319, (x*31)+70); 
+  {
+    myGLCD.drawLine(0, (x*31)+70, 319, (x*31)+70);
   }
 
   printButton("<< BACK >>", back[0], back[1], back[2], back[3], SMALL);
   printButton("SAVE", prSAVE[0], prSAVE[1], prSAVE[2], prSAVE[3], SMALL);
-  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);   
+  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
   setFont(SMALL, 0, 255, 0, 0, 0, 0);
-  myGLCD.print("Calendar Format", 25, 36);  
-  myGLCD.print("Time Format", 25, 80);    
-  myGLCD.print("Temperature Scale", 25, 111);  
-  myGLCD.print("Screensaver", 25, 142);    
-  myGLCD.print("Auto-Stop on Feed", 25, 173);    
+  myGLCD.print("Calendar Format", 25, 36);
+  myGLCD.print("Time Format", 25, 80);
+  myGLCD.print("Temperature Scale", 25, 111);
+  myGLCD.print("Screensaver", 25, 142);
+  myGLCD.print("Auto-Stop on Feed", 25, 173);
 
   genSetSelect();
 }
@@ -3515,204 +3545,204 @@ void generalSettingsScreen()
 /******** AUTOMATIC FEEDER SCREEN ************* dispScreen = 13 ***********************/
 void autoFeederScreen()
 {
-  printHeader("Automatic Fish Feeder Page");  
+  printHeader("Automatic Fish Feeder Page");
 
   myGLCD.setColor(64, 64, 64);
   myGLCD.drawRect(0, 196, 319, 194);
   printButton("<< BACK >>", back[0], back[1], back[2], back[3], SMALL);
-  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);     
+  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
   myGLCD.setColor(64, 64, 64);
   myGLCD.drawRect(159, 194, 161, 121);
-  myGLCD.drawRoundRect(78, 87, 242, 121);    
-  myGLCD.drawRoundRect(80, 89, 240, 119);  
+  myGLCD.drawRoundRect(78, 87, 242, 121);
+  myGLCD.drawRoundRect(80, 89, 240, 119);
   myGLCD.drawRect(0, 103, 78, 105);
-  myGLCD.drawRect(242, 103, 319, 105); 
-  myGLCD.drawLine(159, 87, 159, 14);  
-  myGLCD.drawLine(161, 87, 161, 14);  
+  myGLCD.drawRect(242, 103, 319, 105);
+  myGLCD.drawLine(159, 87, 159, 14);
+  myGLCD.drawLine(161, 87, 161, 14);
   myGLCD.setColor(0, 0, 0);
   myGLCD.drawLine(160, 195, 160, 193);
   myGLCD.drawLine(160, 122, 160, 120);
   myGLCD.drawLine(77, 104, 79, 104);
-  myGLCD.drawLine(241, 104, 243, 104);  
+  myGLCD.drawLine(241, 104, 243, 104);
   myGLCD.drawLine(160, 88, 160, 86);
 
   myGLCD.setColor(153, 0, 102);
   myGLCD.fillRoundRect(85, 94, 235, 114);           //Feed Fish Now Button
   myGLCD.setColor(255, 255, 255);
-  myGLCD.drawRoundRect(85, 94, 235, 114); 
+  myGLCD.drawRoundRect(85, 94, 235, 114);
   setFont(SMALL, 255, 255, 255, 153, 0, 102);
   myGLCD.print("Feed Fish Now!", 106, 98);
 
-  if (FEEDTime1==0)                                 //Feeding Time 1 Button 
-  { 
+  if (FEEDTime1==0)                                 //Feeding Time 1 Button
+  {
     myGLCD.setColor(255, 0, 0);
     myGLCD.fillRoundRect(5, 20, 155, 40);
     setFont(SMALL, 255, 255, 255, 255, 0, 0);
     myGLCD.print("Feeding Time 1", 24, 24);
-    setFont(SMALL, 255, 0, 0, 0, 0, 0);     
+    setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("This time has not", 12, 52);
     myGLCD.print("been scheduled", 24, 65);
-  }      
+  }
   else
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(5, 20, 155, 40);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
-    myGLCD.print("Feeding Time 1", 24, 24); 
-    timeDispH=feedFish1H; 
-    timeDispM=feedFish1M; 
-    if (setTimeFormat==0) { 
+    myGLCD.print("Feeding Time 1", 24, 24);
+    timeDispH=feedFish1H;
+    timeDispM=feedFish1M;
+    if (setTimeFormat==0) {
       xTimeH=40;
     }
-    if (setTimeFormat==1) { 
+    if (setTimeFormat==1) {
       xTimeH=16;
     }
     ReadFromEEPROM();
-    if ((timeDispH>=0) && (timeDispH<=11)) { 
+    if ((timeDispH>=0) && (timeDispH<=11)) {
       AM_PM=1;
     }
-    else { 
+    else {
       AM_PM=2;
-    }          
-    yTime=56; 
+    }
+    yTime=56;
     xColon=xTimeH+32;
-    xTimeM10=xTimeH+48; 
-    xTimeM1=xTimeH+64; 
+    xTimeM10=xTimeH+48;
+    xTimeM1=xTimeH+64;
     xTimeAMPM=xTimeH+96;
     timeCorrectFormat();
   }
   if (FEEDTime2==0)                                 //Feeding Time 2 Button
-  { 
+  {
     myGLCD.setColor(255, 0, 0);
     myGLCD.fillRoundRect(165, 20, 315, 40);
     setFont(SMALL, 255, 255, 255, 255, 0, 0);
-    myGLCD.print("Feeding Time 2", 184, 24); 
-    setFont(SMALL, 255, 0, 0, 0, 0, 0);     
+    myGLCD.print("Feeding Time 2", 184, 24);
+    setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("This time has not", 172, 52);
     myGLCD.print("been scheduled", 184, 65);
-  }      
+  }
   else
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(165, 20, 315, 40);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("Feeding Time 2", 184, 24);
-    timeDispH=feedFish2H; 
-    timeDispM=feedFish2M; 
-    if (setTimeFormat==0) { 
+    timeDispH=feedFish2H;
+    timeDispM=feedFish2M;
+    if (setTimeFormat==0) {
       xTimeH=200;
     }
-    if (setTimeFormat==1) { 
+    if (setTimeFormat==1) {
       xTimeH=176;
-    }      
+    }
     ReadFromEEPROM();
-    if ((timeDispH>=0) && (timeDispH<=11)) { 
+    if ((timeDispH>=0) && (timeDispH<=11)) {
       AM_PM=1;
     }
-    else { 
+    else {
       AM_PM=2;
-    }          
-    yTime=56; 
+    }
+    yTime=56;
     xColon=xTimeH+32;
-    xTimeM10=xTimeH+48; 
-    xTimeM1=xTimeH+64; 
-    xTimeAMPM=xTimeH+96;      
+    xTimeM10=xTimeH+48;
+    xTimeM1=xTimeH+64;
+    xTimeAMPM=xTimeH+96;
     timeCorrectFormat();
-  }          
+  }
   if (FEEDTime3==0)                                 //Feeding Time 3 Button
-  { 
+  {
     myGLCD.setColor(255, 0, 0);
     myGLCD.fillRoundRect(5, 168, 155, 188);
     setFont(SMALL, 255, 255, 255, 255, 0, 0);
     myGLCD.print("Feeding Time 3", 24, 172);
-    setFont(SMALL, 255, 0, 0, 0, 0, 0);     
+    setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("This time has not", 12, 133);
     myGLCD.print("been scheduled", 24, 146);
-  }       
+  }
   else
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(5, 168, 155, 188);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("Feeding Time 3", 24, 172);
-    timeDispH=feedFish3H; 
-    timeDispM=feedFish3M; 
-    if (setTimeFormat==0) { 
+    timeDispH=feedFish3H;
+    timeDispM=feedFish3M;
+    if (setTimeFormat==0) {
       xTimeH=40;
     }
-    if (setTimeFormat==1) { 
+    if (setTimeFormat==1) {
       xTimeH=16;
     }
     ReadFromEEPROM();
-    if ((timeDispH>=0) && (timeDispH<=11)) { 
+    if ((timeDispH>=0) && (timeDispH<=11)) {
       AM_PM=1;
     }
-    else { 
+    else {
       AM_PM=2;
-    }          
-    yTime=137; 
+    }
+    yTime=137;
     xColon=xTimeH+32;
-    xTimeM10=xTimeH+48; 
-    xTimeM1=xTimeH+64; 
-    xTimeAMPM=xTimeH+96;      
+    xTimeM10=xTimeH+48;
+    xTimeM1=xTimeH+64;
+    xTimeAMPM=xTimeH+96;
     timeCorrectFormat();
-  }          
+  }
   if (FEEDTime4==0)                                 //Feeding Time 4 Button
-  { 
+  {
     myGLCD.setColor(255, 0, 0);
     myGLCD.fillRoundRect(165, 168, 315, 188);
     setFont(SMALL, 255, 255, 255, 255, 0, 0);
-    myGLCD.print("Feeding Time 4", 184, 172); 
-    setFont(SMALL, 255, 0, 0, 0, 0, 0);     
+    myGLCD.print("Feeding Time 4", 184, 172);
+    setFont(SMALL, 255, 0, 0, 0, 0, 0);
     myGLCD.print("This time has not", 172, 133);
     myGLCD.print("been scheduled", 184, 146);
   }
   else
-  { 
+  {
     myGLCD.setColor(0, 255, 0);
     myGLCD.fillRoundRect(165, 168, 315, 188);
     setFont(SMALL, 0, 0, 0, 0, 255, 0);
     myGLCD.print("Feeding Time 4", 184, 172);
-    timeDispH=feedFish4H; 
+    timeDispH=feedFish4H;
     timeDispM=feedFish4M;
-    if (setTimeFormat==0) { 
+    if (setTimeFormat==0) {
       xTimeH=200;
     }
-    if (setTimeFormat==1) { 
+    if (setTimeFormat==1) {
       xTimeH=176;
-    }      
+    }
     ReadFromEEPROM();
-    if ((timeDispH>=0) && (timeDispH<=11)) { 
+    if ((timeDispH>=0) && (timeDispH<=11)) {
       AM_PM=1;
     }
-    else { 
+    else {
       AM_PM=2;
-    }          
-    yTime=137; 
+    }
+    yTime=137;
     xColon=xTimeH+32;
-    xTimeM10=xTimeH+48; 
-    xTimeM1=xTimeH+64; 
-    xTimeAMPM=xTimeH+96;      
+    xTimeM10=xTimeH+48;
+    xTimeM1=xTimeH+64;
+    xTimeAMPM=xTimeH+96;
     timeCorrectFormat();
-  }      
+  }
 
   myGLCD.setColor(255, 255, 255);
   for (int x=0; x<2; x++)
-  { 
+  {
     for (int y=0; y<2; y++)
-    { 
-      myGLCD.drawRoundRect((x*160)+5, (y*148)+20, (x*160)+155, (y*148)+40); 
+    {
+      myGLCD.drawRoundRect((x*160)+5, (y*148)+20, (x*160)+155, (y*148)+40);
     }
-  }    
+  }
 }
 
 
 void feedingTimeOutput()
 {
   if ((FEEDTime1==1) && (feedFish1H==rtc[2]) && (feedFish1M==rtc[1]) && (rtc[0]<=5))
-  { 
+  {
     if (setAutoStop==1)
-    { 
+    {
       waveMakerOff=true;
       digitalWrite(WaveMakerTop, LOW);
       digitalWrite(WaveMakerBottom, LOW);
@@ -3722,22 +3752,22 @@ void feedingTimeOutput()
     digitalWrite(autoFeeder, HIGH);
     delay(6000);
     RTC.get(rtc,true);
-    digitalWrite(autoFeeder, LOW); 
+    digitalWrite(autoFeeder, LOW);
   }
   if (FeedWaveCtrl_1==true)
-  { 
+  {
     fiveTillBackOn1++;
-    if (fiveTillBackOn1>60)                       //60 is 5 minutes (60/12=5) 
-    { 
-      waveMakerOff=false; 
+    if (fiveTillBackOn1>60)                       //60 is 5 minutes (60/12=5)
+    {
+      waveMakerOff=false;
       FeedWaveCtrl_1=false;
     }
   }
 
   if ((FEEDTime2==1) && (feedFish2H==rtc[2]) && (feedFish2M==rtc[1]) && (rtc[0]<=5))
-  { 
+  {
     if (setAutoStop==1)
-    { 
+    {
       waveMakerOff=true;
       digitalWrite(WaveMakerTop, LOW);
       digitalWrite(WaveMakerBottom, LOW);
@@ -3747,22 +3777,22 @@ void feedingTimeOutput()
     digitalWrite(autoFeeder, HIGH);
     delay(6000);
     RTC.get(rtc,true);
-    digitalWrite(autoFeeder, LOW); 
+    digitalWrite(autoFeeder, LOW);
   }
   if (FeedWaveCtrl_2==true)
-  { 
+  {
     fiveTillBackOn2++;
-    if (fiveTillBackOn2>60) 
-    { 
-      waveMakerOff=false; 
+    if (fiveTillBackOn2>60)
+    {
+      waveMakerOff=false;
       FeedWaveCtrl_2=false;
     }
   }
 
   if ((FEEDTime3==1) && (feedFish3H==rtc[2]) && (feedFish3M==rtc[1]) && (rtc[0]<=5))
-  { 
+  {
     if (setAutoStop==1)
-    { 
+    {
       waveMakerOff=true;
       digitalWrite(WaveMakerTop, LOW);
       digitalWrite(WaveMakerBottom, LOW);
@@ -3772,22 +3802,22 @@ void feedingTimeOutput()
     digitalWrite(autoFeeder, HIGH);
     delay(6000);
     RTC.get(rtc,true);
-    digitalWrite(autoFeeder, LOW); 
+    digitalWrite(autoFeeder, LOW);
   }
   if (FeedWaveCtrl_3==true)
-  { 
+  {
     fiveTillBackOn3++;
-    if (fiveTillBackOn3>60) 
-    { 
-      waveMakerOff=false; 
+    if (fiveTillBackOn3>60)
+    {
+      waveMakerOff=false;
       FeedWaveCtrl_3=false;
     }
-  }    
+  }
 
   if ((FEEDTime4==1) && (feedFish4H==rtc[2]) && (feedFish4M==rtc[1]) && (rtc[0]<=5))
-  { 
+  {
     if (setAutoStop==1)
-    { 
+    {
       waveMakerOff=true;
       digitalWrite(WaveMakerTop, LOW);
       digitalWrite(WaveMakerBottom, LOW);
@@ -3797,53 +3827,53 @@ void feedingTimeOutput()
     digitalWrite(autoFeeder, HIGH);
     delay(6000);
     RTC.get(rtc,true);
-    digitalWrite(autoFeeder, LOW); 
+    digitalWrite(autoFeeder, LOW);
   }
   if (FeedWaveCtrl_4==true)
-  { 
+  {
     fiveTillBackOn4++;
-    if (fiveTillBackOn4>60) 
-    { 
-      waveMakerOff=false; 
+    if (fiveTillBackOn4>60)
+    {
+      waveMakerOff=false;
       FeedWaveCtrl_4=false;
     }
-  }    
+  }
 }
 /*********************** END OF AUTOMATIC FEEDER SETTINGS SCREEN **********************/
 
 
 /***** SET AUTOMATIC FEEDER TIMES SCREEN ********** dispScreen = 14 *******************/
-void setFeederTimesScreen(boolean refreshAll=true) 
+void setFeederTimesScreen(boolean refreshAll=true)
 {
   if (feedTime==1)
-  { 
-    printHeader("Set Feeding Time 1"); 
+  {
+    printHeader("Set Feeding Time 1");
   }
   if (feedTime==2)
-  { 
+  {
     printHeader("Set Feeding Time 2");
   }
   if (feedTime==3)
-  { 
+  {
     printHeader("Set Feeding Time 3");
   }
   if (feedTime==4)
-  { 
+  {
     printHeader("Set Feeding Time 4");
   }
 
   if (refreshAll)
-  { 
-    for (int i=0; i<7; i++) 
-    { 
+  {
+    for (int i=0; i<7; i++)
+    {
       rtcSet[i] = rtc[i];
-    }  
+    }
 
     myGLCD.setColor(64, 64, 64);
     myGLCD.drawRect(0, 196, 319, 194);
     printButton("<< BACK >>", back[0], back[1], back[2], back[3], SMALL);
     printButton("SAVE", prSAVE[0], prSAVE[1], prSAVE[2], prSAVE[3], SMALL);
-    printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);   
+    printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
     feedingTimeOnOff();
 
@@ -3852,19 +3882,19 @@ void setFeederTimesScreen(boolean refreshAll=true)
     printButton ("-", houM[0], houM[1], houM[2], houM[3], true);     //hour down
     printButton ("-", minM[0], minM[1], minM[2], minM[3], true);     //min down
     if (setTimeFormat==1)
-    { 
-      printButton ("+", ampmP[0], ampmP[1], ampmP[2], ampmP[3], true); //AM/PM up    
+    {
+      printButton ("+", ampmP[0], ampmP[1], ampmP[2], ampmP[3], true); //AM/PM up
       printButton ("-", ampmM[0], ampmM[1], ampmM[2], ampmM[3], true);
-    }//AM/PM down 
-  }    
+    }//AM/PM down
+  }
 
-  timeDispH=rtcSet[2]; 
+  timeDispH=rtcSet[2];
   timeDispM=rtcSet[1];
-  xTimeH=107; 
-  yTime=68;  
+  xTimeH=107;
+  yTime=68;
   xColon=xTimeH+42;
-  xTimeM10=xTimeH+70; 
-  xTimeM1=xTimeH+86; 
+  xTimeM10=xTimeH+70;
+  xTimeM1=xTimeH+86;
   xTimeAMPM=xTimeH+155;
   timeChange();
 }
@@ -3873,7 +3903,7 @@ void setFeederTimesScreen(boolean refreshAll=true)
 
 /************** ABOUT SCREEN ****************** dispScreen = 15 ***********************/
 void AboutScreen()
-{ 
+{
   printHeader("Jarduino Aquarium Controller v.1.1");
 
   setFont(SMALL, 0, 255, 0, 0, 0 , 0);
@@ -3888,15 +3918,15 @@ void AboutScreen()
   myGLCD.print("and Dave Rosser", 5, 108);
   myGLCD.print("http://code.google.com/p/dangerduino/", 5, 120);
 
-  myGLCD.print("Special Thanks: Hugh & Dave, Kev Tench,", 5, 140); 
+  myGLCD.print("Special Thanks: Hugh & Dave, Kev Tench,", 5, 140);
   myGLCD.print("Mark Chester, Ned Simpson, Stilo, Neil", 5, 152);
   myGLCD.print("Williams, my Dad, and my loving Wife", 5, 164);
 
   myGLCD.setColor(64, 64, 64);
   myGLCD.drawRect(0, 196, 319, 194);
   printButton("<< BACK >>", back[0], back[1], back[2], back[3], SMALL);
-  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);  
-} 
+  printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
+}
 /********************************* END OF ABOUT SCREEN ********************************/
 
 
@@ -3908,33 +3938,33 @@ void processMyTouch()
   y=myTouch.getY();
 
   returnTimer=0;
-  screenSaverTimer=0;  
+  screenSaverTimer=0;
 
-  if ((x>=canC[0]) && (x<=canC[2]) && (y>=canC[1]) && (y<=canC[3])  //press cancel 
-  && (dispScreen!=0) && (dispScreen!=5) && (dispScreen!=6) && (dispScreen!=8) 
+  if ((x>=canC[0]) && (x<=canC[2]) && (y>=canC[1]) && (y<=canC[3])  //press cancel
+  && (dispScreen!=0) && (dispScreen!=5) && (dispScreen!=6) && (dispScreen!=8)
     && (dispScreen!=11))
   {
     waitForIt(canC[0], canC[1], canC[2], canC[3]);
     LEDtestTick = false;
-    waveMakerOff = false;     
-    ReadFromEEPROM();     
+    waveMakerOff = false;
+    ReadFromEEPROM();
     dispScreen=0;
     clearScreen();
     mainScreen(true);
-  }  
+  }
   else
-    if ((x>=back[0]) && (x<=back[2]) && (y>=back[1]) && (y<=back[3])  //press back    
+    if ((x>=back[0]) && (x<=back[2]) && (y>=back[1]) && (y<=back[3])  //press back
     && (dispScreen!=0) && (dispScreen!=1) && (dispScreen!=5) && (dispScreen!=6)
       && (dispScreen!=8) && (dispScreen!=11) && (dispScreen!=14))
     {
       waitForIt(back[0], back[1], back[2], back[3]);
       LEDtestTick = false;
-      waveMakerOff = false;          
+      waveMakerOff = false;
       ReadFromEEPROM();
       dispScreen=1;
       clearScreen();
       menuScreen();
-    }      
+    }
     else
     {
       switch (dispScreen) {
@@ -3950,30 +3980,30 @@ void processMyTouch()
           if ((y>=tanD[1]) && (y<=tanD[3]))                   //press Date & Clock Screen
           {
             waitForIt(tanD[0], tanD[1], tanD[2], tanD[3]);
-            if ((timeDispH>=0) && (timeDispH<=11)) { 
+            if ((timeDispH>=0) && (timeDispH<=11)) {
               AM_PM=1;
             }
-            else { 
+            else {
               AM_PM=2;
-            }          
+            }
             dispScreen=2;
             clearScreen();
             clockScreen();
-          } 
+          }
           if ((y>=temC[1]) && (y<=temC[3]))                   //press H2O Temp Control
           {
             waitForIt(temC[0], temC[1], temC[2], temC[3]);
             ReadFromEEPROM();
             dispScreen=3;
             clearScreen();
-            tempScreen(true); 
+            tempScreen(true);
           }
           if ((y>=wave[1]) && (y<=wave[3]))                   //press Wavemaker Screen
           {
             waitForIt(wave[0], wave[1], wave[2], wave[3]);
             dispScreen=10;
             clearScreen();
-            WaveMakerScreen(); 
+            WaveMakerScreen();
             WaveMakerStatusScreen();
           }
           if ((y>=gSet[1]) && (y<=gSet[3]))                   //press General Settings
@@ -3992,14 +4022,14 @@ void processMyTouch()
             dispScreen=4;
             clearScreen();
             ledTestOptionsScreen();
-          }  
+          }
           if  ((y>=ledChM[1]) && (y<=ledChM[3]))             //press Change LED values
           {
             waitForIt(ledChM[0], ledChM[1], ledChM[2], ledChM[3]);
             dispScreen=7;
             clearScreen();
-            ledColorViewScreen(); 
-          } 
+            ledColorViewScreen();
+          }
           if  ((y>=aFeed[1]) && (y<=aFeed[3]))               //press Automatic Feeder screen
           {
             waitForIt(aFeed[0], aFeed[1], aFeed[2], aFeed[3]);
@@ -4012,8 +4042,8 @@ void processMyTouch()
             waitForIt(about[0], about[1], about[2], about[3]);
             dispScreen=15;
             clearScreen();
-            AboutScreen(); 
-          }         
+            AboutScreen();
+          }
         }
         break;
 
@@ -4024,17 +4054,17 @@ void processMyTouch()
           if (setTimeFormat==1)
           {
             if ((rtcSet[2]==0) && (AM_PM==2))
-            { 
+            {
               rtcSet[2]+=12;
             }
             if (((rtcSet[2]>=1) && (rtcSet[2]<=11)) && (AM_PM==2))
-            { 
+            {
               rtcSet[2]+=12;
-            }  
+            }
             if (((rtcSet[2]>=12) && (rtcSet[2]<=23)) && (AM_PM==1))
-            { 
+            {
               rtcSet[2]-=12;
-            }           
+            }
           }
           SaveRTC();
           dispScreen=0;
@@ -4049,9 +4079,9 @@ void processMyTouch()
             {
               waitForIt(houU[0], houU[1], houU[2], houU[3]);
               rtcSet[2]++;
-              if (rtcSet[2]>=24) 
-              { 
-                rtcSet[2]=0; 
+              if (rtcSet[2]>=24)
+              {
+                rtcSet[2]=0;
               }
             }
             if ((x>=minU[0]) && (x<=minU[2]))                 //press min up
@@ -4059,7 +4089,7 @@ void processMyTouch()
               waitForIt(minU[0], minU[1], minU[2], minU[3]);
               rtcSet[1]++;
               if (rtcSet[1]>=60) {
-                rtcSet[1] = 0; 
+                rtcSet[1] = 0;
               }
             }
             if ((x>=ampmU[0]) && (x<=ampmU[2]))               //press AMPM up
@@ -4077,11 +4107,11 @@ void processMyTouch()
           {
             if ((x>=houD[0]) && (x<=houD[2]))                 //press hour down
             {
-              waitForIt(houD[0], houD[1], houD[2], houD[3]);             
+              waitForIt(houD[0], houD[1], houD[2], houD[3]);
               rtcSet[2]--;
-              if (rtcSet[2]<0) 
-              { 
-                rtcSet[2]=23; 
+              if (rtcSet[2]<0)
+              {
+                rtcSet[2]=23;
               }
             }
             if ((x>=minD[0]) && (x<=minD[2]))                 //press min down
@@ -4089,8 +4119,8 @@ void processMyTouch()
               waitForIt(minD[0], minD[1], minD[2], minD[3]);
               rtcSet[1]--;
               if (rtcSet[1]<0) {
-                rtcSet[1] = 59; 
-              } 
+                rtcSet[1] = 59;
+              }
             }
             if ((x>=ampmD[0]) && (x<=ampmD[2]))               //press AMPM down
             {
@@ -4101,7 +4131,7 @@ void processMyTouch()
               else {
                 AM_PM=1;
               }
-            }           
+            }
           }
           if ((y>=dayU[1]) && (y<=dayU[3]))                    //THIRD ROW
           {
@@ -4112,7 +4142,7 @@ void processMyTouch()
                 waitForIt(dayU[0], dayU[1], dayU[2], dayU[3]);
                 rtcSet[4]++;
                 if (rtcSet[4]>31) {
-                  rtcSet[4] = 1; 
+                  rtcSet[4] = 1;
                 }
               }
               if ((x>=monU[0]) && (x<=monU[2]))              //press month up
@@ -4120,10 +4150,10 @@ void processMyTouch()
                 waitForIt(monU[0], monU[1], monU[2], monU[3]);
                 rtcSet[5]++;
                 if (rtcSet[5]>12) {
-                  rtcSet[5] = 1; 
+                  rtcSet[5] = 1;
                 }
               }
-            } 
+            }
             else {
               if (setCalendarFormat==1)                         //MM/DD/YYYY Format
               {
@@ -4132,7 +4162,7 @@ void processMyTouch()
                   waitForIt(dayU[0], dayU[1], dayU[2], dayU[3]);
                   rtcSet[5]++;
                   if (rtcSet[5]>12) {
-                    rtcSet[5] = 1; 
+                    rtcSet[5] = 1;
                   }
                 }
                 if ((x>=monU[0]) && (x<=monU[2]))              //press day up
@@ -4140,17 +4170,17 @@ void processMyTouch()
                   waitForIt(monU[0], monU[1], monU[2], monU[3]);
                   rtcSet[4]++;
                   if (rtcSet[4]>31) {
-                    rtcSet[4] = 1; 
+                    rtcSet[4] = 1;
                   }
                 }
-              }      
+              }
             }
             if ((x>=yeaU[0]) && (x<=yeaU[2]))                 //press year up
             {
               waitForIt(yeaU[0], yeaU[1], yeaU[2], yeaU[3]);
               rtcSet[6]++;
               if (rtcSet[6]>2100) {
-                rtcSet[6] = 2000; 
+                rtcSet[6] = 2000;
               }
             }
           }
@@ -4163,7 +4193,7 @@ void processMyTouch()
                 waitForIt(dayD[0], dayD[1], dayD[2], dayD[3]);
                 rtcSet[4]--;
                 if (rtcSet[4]<1) {
-                  rtcSet[4] = 31; 
+                  rtcSet[4] = 31;
                 }
               }
               if ((x>=monD[0]) && (x<=monD[2]))              //press month down
@@ -4171,10 +4201,10 @@ void processMyTouch()
                 waitForIt(monD[0], monD[1], monD[2], monD[3]);
                 rtcSet[5]--;
                 if (rtcSet[5]<1) {
-                  rtcSet[5] = 12; 
+                  rtcSet[5] = 12;
                 }
               }
-            } 
+            }
             else {
               if (setCalendarFormat==1)                         //MM/DD/YYYY Format
               {
@@ -4183,7 +4213,7 @@ void processMyTouch()
                   waitForIt(dayD[0], dayD[1], dayD[2], dayD[3]);
                   rtcSet[5]--;
                   if (rtcSet[5]<1) {
-                    rtcSet[5] = 12; 
+                    rtcSet[5] = 12;
                   }
                 }
                 if ((x>=monD[0]) && (x<=monD[2]))              //press day down
@@ -4191,22 +4221,22 @@ void processMyTouch()
                   waitForIt(monD[0], monD[1], monD[2], monD[3]);
                   rtcSet[4]--;
                   if (rtcSet[4]<1) {
-                    rtcSet[4] = 31; 
+                    rtcSet[4] = 31;
                   }
                 }
-              }      
-            }   
+              }
+            }
             if ((x>=yeaD[0]) && (x<=yeaD[2]))                 //press year down
             {
               waitForIt(yeaD[0], yeaD[1], yeaD[2], yeaD[3]);
               rtcSet[6]--;
               if (rtcSet[6]<2000) {
-                rtcSet[6] = 2100; 
+                rtcSet[6] = 2100;
               }
             }
           }
-          clockScreen(false); 
-        }       
+          clockScreen(false);
+        }
         break;
 
       case 3:     //------------------ H20 TEMPERATURE CONTROL ---------------
@@ -4224,7 +4254,7 @@ void processMyTouch()
             setTempF=((1.8*setTempC)+32.05);
             offTempF=((1.8*offTempC)+0.05);
             alarmTempF=((1.8*alarmTempC)+0.05);
-          }    
+          }
           if (setTempScale==1)                      //Farenheit to Celsius (Consistency Conversion)
           {
             setTempC=((.55556*(setTempF-32))+.05);
@@ -4235,7 +4265,7 @@ void processMyTouch()
           SaveTempToEEPROM();
           clearScreen();
           mainScreen(true);
-        } 
+        }
         else
           setFont(LARGE, 255, 255, 255, 0, 0, 0);
         {
@@ -4246,10 +4276,10 @@ void processMyTouch()
               waitForIt(temM[0], temM[1], temM[2], temM[3]);
               temp2beS -= 0.1;
               if ((setTempScale==1) && (temp2beS <= 50)){
-                temp2beS = 50; 
+                temp2beS = 50;
               }
               if ((setTempScale==0) && (temp2beS <= 10)) {
-                temp2beS = 10; 
+                temp2beS = 10;
               }
               tempScreen();
             }
@@ -4258,16 +4288,16 @@ void processMyTouch()
               waitForIt(offM[0], offM[1], offM[2], offM[3]);
               temp2beO -= 0.1;
               if (temp2beO < 0.1) {
-                temp2beO = 0.0; 
+                temp2beO = 0.0;
               }
               tempScreen();
-            }          
+            }
             if ((y>=almM[1]) && (y<=almM[3]))                      //press alarm minus
             {
               waitForIt(almM[0], almM[1], almM[2], almM[3]);
               temp2beA -= 0.1;
               if (temp2beA < 0.1) {
-                temp2beA = 0.0;  
+                temp2beA = 0.0;
               }
               tempScreen();
             }
@@ -4279,10 +4309,10 @@ void processMyTouch()
               waitForIt(temP[0], temP[1], temP[2], temP[3]);
               temp2beS += 0.1;
               if ((setTempScale==1) && (temp2beS >= 104)){
-                temp2beS = 104; 
+                temp2beS = 104;
               }
               if ((setTempScale==0) && (temp2beS >= 40)) {
-                temp2beS = 40; 
+                temp2beS = 40;
               }
               tempScreen();
             }
@@ -4291,7 +4321,7 @@ void processMyTouch()
               waitForIt(offP[0], offP[1], offP[2], offP[3]);
               temp2beO += 0.1;
               if (temp2beO >= 10) {
-                temp2beO = 9.9; 
+                temp2beO = 9.9;
               }
               tempScreen();
             }
@@ -4300,7 +4330,7 @@ void processMyTouch()
               waitForIt(almP[0], almP[1], almP[2], almP[3]);
               temp2beA += 0.1;
               if (temp2beA >= 10) {
-                temp2beA = 9.9;  
+                temp2beA = 9.9;
               }
               tempScreen();
             }
@@ -4308,65 +4338,65 @@ void processMyTouch()
         }
         break;
 
-      case 4:     // -------------- LED TEST OPTIONS SCREEN -----------------    
+      case 4:     // -------------- LED TEST OPTIONS SCREEN -----------------
         if ((x>=tstLA[0]) && (x<=tstLA[2]) && (y>=tstLA[1]) && (y<=tstLA[3]))   //Test LED Array Output
         {
-          waitForIt(tstLA[0], tstLA[1], tstLA[2], tstLA[3]); 
+          waitForIt(tstLA[0], tstLA[1], tstLA[2], tstLA[3]);
           dispScreen=5;
           clearScreen();
           testArrayScreen(true);
-        }  
+        }
         if ((x>=cntIL[0]) && (x<=cntIL[2]) && (y>=cntIL[1]) && (y<=cntIL[3]))   //Test Individual LEDs
         {
-          waitForIt(cntIL[0], cntIL[1], cntIL[2], cntIL[3]); 
+          waitForIt(cntIL[0], cntIL[1], cntIL[2], cntIL[3]);
           dispScreen=6;
           clearScreen();
           testIndLedScreen();
           colorLEDtest = true;
-        }         
+        }
         break;
 
       case 5:     //---------------- TEST LED ARRAY SCREEN ------------------
-        if ((x>=back[0]) && (x<=back[2]) && (y>=back[1]) && (y<=back[3])   //press back    
-        && (LEDtestTick==false))    
+        if ((x>=back[0]) && (x<=back[2]) && (y>=back[1]) && (y<=back[3])   //press back
+        && (LEDtestTick==false))
         {
           waitForIt(back[0], back[1], back[2], back[3]);
           LEDtestTick = false;
-          ReadFromEEPROM();     
+          ReadFromEEPROM();
           dispScreen=4;
           clearScreen();
           ledTestOptionsScreen();
-        }      
+        }
         if ((x>=canC[0]) && (x<=canC[2]) && (y>=canC[1]) && (y<=canC[3])   //press CANCEL
-        && (LEDtestTick==false))    
+        && (LEDtestTick==false))
         {
           waitForIt(canC[0], canC[1], canC[2], canC[3]);
           LEDtestTick = false;
-          ReadFromEEPROM();     
+          ReadFromEEPROM();
           dispScreen=0;
           clearScreen();
           mainScreen(true);
-        }  
+        }
         if ((x>=stsT[0]) && (x<=stsT[2]) && (y>=stsT[1]) && (y<=stsT[3]))  //press start/stop test
         {
-          waitForIt(stsT[0], stsT[1], stsT[2], stsT[3]); 
+          waitForIt(stsT[0], stsT[1], stsT[2], stsT[3]);
 
           if (LEDtestTick) {
             LEDtestTick = false;
             testArrayScreen(true);
           }
           else {
-            LEDtestTick = true;             
+            LEDtestTick = true;
             testArrayScreen();
           }
-        } 
+        }
         else
         {
           if ((x>=tenM[0]) && (x<=tenM[2]) && (y>=tenM[1]) && (y<=tenM[3]))   //press -10s
           {
             min_cnt -= 10;
             if (min_cnt<0) {
-              min_cnt= 0; 
+              min_cnt= 0;
             }
             delay(50);
           }
@@ -4374,16 +4404,16 @@ void processMyTouch()
           {
             min_cnt += 10;
             if (min_cnt>1440) {
-              min_cnt = 1440; 
+              min_cnt = 1440;
             }
             delay(50);
           }
         }
         break;
 
-      case 6:     // --------------- TEST INDIVIDUAL LED SCREEN --------------    
+      case 6:     // --------------- TEST INDIVIDUAL LED SCREEN --------------
         int CL_check, CL_check2;
-        if ((x>=215) && (x<=315) && (y>=200) && (y<=220))          //press back    
+        if ((x>=215) && (x<=315) && (y>=200) && (y<=220))          //press back
         {
           waitForIt(215, 200, 315, 220);
           LEDtestTick = false;
@@ -4487,53 +4517,53 @@ void processMyTouch()
 
         if ((y>=78) && (y<=100))                                   //Plus buttons were touched
         {
-          for (int i=0; i<3; i++) {                
+          for (int i=0; i<3; i++) {
             if ((x>=(i*27)+204) && (x<=(i*27)+226) && (COLOR!=0)) {
               waitForItSq((i*27)+204, 78, (i*27)+226, 100);
-              if (i==0) { 
-                cl_100 += 1; 
+              if (i==0) {
+                cl_100 += 1;
               }
-              if (i==1) { 
-                cl_10  += 1; 
+              if (i==1) {
+                cl_10  += 1;
               }
-              if (i==2) { 
-                cl_1   += 1; 
+              if (i==2) {
+                cl_1   += 1;
               }
               CL_check = (cl_10*10)+cl_1;
-              if ((cl_100>2) && (i==0)) { 
-                cl_100=0; 
+              if ((cl_100>2) && (i==0)) {
+                cl_100=0;
               }
-              if ((cl_100<2) && (cl_10>9) && (i==1)) { 
-                cl_10=0; 
+              if ((cl_100<2) && (cl_10>9) && (i==1)) {
+                cl_10=0;
               }
-              if ((cl_100>=2) && (cl_10>=5) && (i==1)) { 
-                cl_10=5; 
+              if ((cl_100>=2) && (cl_10>=5) && (i==1)) {
+                cl_10=5;
               }
-              if ((cl_100<2) && (cl_1>9) && (i==2)) { 
-                cl_1=0; 
+              if ((cl_100<2) && (cl_1>9) && (i==2)) {
+                cl_1=0;
               }
-              if ((cl_100>=2) && (cl_10<5) && (cl_1>9) && (i==2)) { 
-                cl_1=0; 
+              if ((cl_100>=2) && (cl_10<5) && (cl_1>9) && (i==2)) {
+                cl_1=0;
               }
-              if ((cl_100>=2) && (cl_10>=5) && (i==2)) { 
-                cl_1=5; 
+              if ((cl_100>=2) && (cl_10>=5) && (i==2)) {
+                cl_1=5;
               }
-              if ((CL_check>=55) && ((i==0) || (i==1)) && (cl_100>1)) 
-              { 
-                cl_10=5; 
-                cl_1=5; 
+              if ((CL_check>=55) && ((i==0) || (i==1)) && (cl_100>1))
+              {
+                cl_10=5;
+                cl_1=5;
                 setFont(LARGE, 255, 255, 255, 0, 0, 0);
                 myGLCD.printNumI(cl_10, 234, 54);
-                myGLCD.printNumI(cl_1, 255, 54); 
+                myGLCD.printNumI(cl_1, 255, 54);
               }
               setFont(LARGE, 255, 255, 255, 0, 0, 0);
-              if (i==0) { 
+              if (i==0) {
                 myGLCD.printNumI(cl_100, 214, 54);
               }
-              if (i==1) { 
+              if (i==1) {
                 myGLCD.printNumI(cl_10, 234, 54);
               }
-              if (i==2) { 
+              if (i==2) {
                 myGLCD.printNumI(cl_1, 255, 54);
               }
               CL_100 = cl_100*100;
@@ -4547,68 +4577,68 @@ void processMyTouch()
               }
               drawBarandColorValue();
               LED_levels_output();
-              checkTempC();             
+              checkTempC();
             }
           }
         }
         else if ((y>=105) && (y<=127))                             //Minus buttons were touched
         {
-          for (int i=0; i<3; i++) {                
+          for (int i=0; i<3; i++) {
             if ((x>=(i*27)+204) && (x<=(i*27)+226) && (COLOR!=0)) {
               waitForItSq((i*27)+204, 105, (i*27)+226, 127);
-              if (i==0) { 
-                cl_100 -= 1; 
+              if (i==0) {
+                cl_100 -= 1;
               }
-              if (i==1) { 
-                cl_10  -= 1; 
+              if (i==1) {
+                cl_10  -= 1;
               }
-              if (i==2) { 
-                cl_1   -= 1; 
+              if (i==2) {
+                cl_1   -= 1;
               }
               CL_check = (cl_10*10)+cl_1;
               CL_check2 = (cl_100*100)+cl_1;
-              if ((cl_100<0) && (i==0)) { 
-                cl_100=2; 
+              if ((cl_100<0) && (i==0)) {
+                cl_100=2;
               }
-              if ((cl_10<0) && (i==1) && (cl_100<2)) { 
-                cl_10=9; 
+              if ((cl_10<0) && (i==1) && (cl_100<2)) {
+                cl_10=9;
               }
-              if ((cl_10<0) && (i==1) && (cl_100==2)) { 
-                cl_10=5; 
+              if ((cl_10<0) && (i==1) && (cl_100==2)) {
+                cl_10=5;
               }
-              if ((cl_1<0) && (i==2) && (cl_100<2)) { 
-                cl_1=9; 
+              if ((cl_1<0) && (i==2) && (cl_100<2)) {
+                cl_1=9;
               }
-              if ((cl_1<0) && (i==2) && (cl_100==2) && (cl_10<5)) { 
-                cl_1=9; 
+              if ((cl_1<0) && (i==2) && (cl_100==2) && (cl_10<5)) {
+                cl_1=9;
               }
-              if ((cl_1<0) && (i==2) && (cl_100==2) && (cl_10>=5)) { 
-                cl_1=5; 
+              if ((cl_1<0) && (i==2) && (cl_100==2) && (cl_10>=5)) {
+                cl_1=5;
               }
-              if ((CL_check>=55) && ((i==0) || (i==1)) && (cl_100>1)) 
-              { 
-                cl_10=5; 
-                cl_1=5; 
+              if ((CL_check>=55) && ((i==0) || (i==1)) && (cl_100>1))
+              {
+                cl_10=5;
+                cl_1=5;
                 setFont(LARGE, 255, 255, 255, 0, 0, 0);
                 myGLCD.printNumI(cl_10, 234, 54);
-                myGLCD.printNumI(cl_1, 255, 54); 
+                myGLCD.printNumI(cl_1, 255, 54);
               }
-              if ((CL_check2>205) && (i==1) && (cl_10<1)) 
-              { 
-                cl_10=5; 
-                cl_1=5; 
+              if ((CL_check2>205) && (i==1) && (cl_10<1))
+              {
+                cl_10=5;
+                cl_1=5;
                 setFont(LARGE, 255, 255, 255, 0, 0, 0);
                 myGLCD.printNumI(cl_10, 234, 54);
-                myGLCD.printNumI(cl_1, 255, 54); 
+                myGLCD.printNumI(cl_1, 255, 54);
               }
               setFont(LARGE, 255, 255, 255, 0, 0, 0);
-              if (i==0) { 
+              if (i==0) {
                 myGLCD.printNumI(cl_100, 214, 54);
               }
-              if (i==1) { 
+              if (i==1) {
                 myGLCD.printNumI(cl_10, 234, 54);
               }
-              if (i==2) { 
+              if (i==2) {
                 myGLCD.printNumI(cl_1, 255, 54);
               }
               CL_100 = cl_100*100;
@@ -4628,20 +4658,20 @@ void processMyTouch()
         }
         break;
 
-      case 7:     // ----------- VIEW INDIVIDUAL LED COLORS SCREEN -----------    
+      case 7:     // ----------- VIEW INDIVIDUAL LED COLORS SCREEN -----------
         if ((x>=10) && (x<=150))                                //first column
         {
           if ((y>=20) && (y<=50))                              //View White LEDs Array
           {
-            waitForIt(10, 20, 150, 50); 
+            waitForIt(10, 20, 150, 50);
             dispScreen=8;
             COLOR = WHITE;
             clearScreen();
             ledValuesScreen();
-          }  
+          }
           if ((y>=60) && (y<=90))                              //View Royal Blue LEDs Array
           {
-            waitForIt(10, 60, 150, 90); 
+            waitForIt(10, 60, 150, 90);
             dispScreen=8;
             COLOR = ROYAL;
             clearScreen();
@@ -4649,50 +4679,50 @@ void processMyTouch()
           }
           if ((y>=100) && (y<=130))                            //View Red LEDs Array
           {
-            waitForIt(10, 100, 150, 130); 
+            waitForIt(10, 100, 150, 130);
             dispScreen=8;
             COLOR = RED;
             clearScreen();
             ledValuesScreen();
-          }  
+          }
         }
         if ((x>=170) && (x<=310))                               //second column
         {
           if ((y>=20) && (y<=50))                              //View Blue LEDs Array
-          { 
-            waitForIt(170, 20, 310, 50); 
+          {
+            waitForIt(170, 20, 310, 50);
             dispScreen=8;
             COLOR = BLUE;
             clearScreen();
             ledValuesScreen();
-          }         
+          }
           if ((y>=60) && (y<=90))                              //View Ultra LEDs Array
           {
-            waitForIt(170, 60, 310, 90); 
+            waitForIt(170, 60, 310, 90);
             dispScreen=8;
             COLOR = ULTRA;
             clearScreen();
             ledValuesScreen();
-          }  
+          }
           if ((y>=100) && (y<=130))                            //View Sump LEDs Array
           {
-            waitForIt(170, 100, 310, 130); 
+            waitForIt(170, 100, 310, 130);
             dispScreen=8;
             COLOR = SUMP;
             clearScreen();
             ledValuesScreen();
-          }         
+          }
         }
         if ((x>=90) && (x<=230) && (y>=140) && (y<=170))        //View Moon LEDs MI
         {
-          waitForIt(90, 140, 230, 170); 
+          waitForIt(90, 140, 230, 170);
           ReadFromEEPROM();
           dispScreen=8;
           COLOR = MOON;
           clearScreen();
           ledValuesScreen();
         }
-        break;    
+        break;
 
       case 8:     // -------------- SHOW LED VALUES TABLE SCREEN -------------
         if ((x>=back[0]) && (x<=back[2]) && (y>=back[1]) && (y<=back[3]))   //press MORE COLORS
@@ -4702,17 +4732,17 @@ void processMyTouch()
           dispScreen=7;
           clearScreen();
           ledColorViewScreen();
-        } 
-        else 
+        }
+        else
           if ((x>=ledChV[0]) && (x<=ledChV[2]) && (y>=ledChV[1]) && (y<=ledChV[3]) && (COLOR!=7))   //press CHANGE
         {
           waitForIt(ledChV[0], ledChV[1], ledChV[2], ledChV[3]);
           ReadFromEEPROM();
           dispScreen=9;
-          clearScreen(); 
+          clearScreen();
           ledChangeScreen();
-        } 
-        else 
+        }
+        else
           if ((x>=eeprom[0]) && (x<=eeprom[2]) && (y>=eeprom[1]) && (y<=eeprom[3]) && (COLOR!=7))  //press SAVE
         {
           waitForIt(eeprom[0], eeprom[1], eeprom[2], eeprom[3]);
@@ -4720,8 +4750,8 @@ void processMyTouch()
           dispScreen=7;
           clearScreen();
           ledColorViewScreen();
-        } 
-        else 
+        }
+        else
           if ((x>=prSAVE[0]) && (x<=prSAVE[2]) && (y>=prSAVE[1]) && (y<=prSAVE[3])) //press SAVE
         {
           waitForIt(prSAVE[0], prSAVE[1], prSAVE[2], prSAVE[3]);
@@ -4729,8 +4759,8 @@ void processMyTouch()
           dispScreen=7;
           clearScreen();
           ledColorViewScreen();
-        } 
-        else             
+        }
+        else
           if ((x>=canC[0]) && (x<=canC[2]) && (y>=canC[1]) && (y<=canC[3]))         //press CANCEL
         {
           waitForIt(canC[0], canC[1], canC[2], canC[3]);
@@ -4739,32 +4769,32 @@ void processMyTouch()
           dispScreen=0;
           clearScreen();
           mainScreen(true);
-        } 
-        else               
+        }
+        else
 
           if ((x>=miM[0]) && (x<=miM[2]) && (y>=miM[1]) && (y<=miM[3]))   //press MI minus
         {
           waitForIt(miM[0], miM[1], miM[2], miM[3]);
           tMI -= 1;
           if (tMI <= 0) {
-            tMI = 0; 
+            tMI = 0;
           }
-          MI = tMI;         
+          MI = tMI;
           setFont(LARGE, 255, 255, 255, 0, 0, 0);
           myGLCD.print("   ", CENTER, 120);
           myGLCD.printNumI(tMI, CENTER, 120);
-        } 
-        else      
+        }
+        else
           if ((x>=miP[0]) && (x<=miP[2]) && (y>=miP[1]) && (y<=miP[3]))   //press MI plus
         {
           waitForIt(miP[0], miP[1], miP[2], miP[3]);
           tMI += 5;
           if (tMI >255) {
-            tMI = 255; 
+            tMI = 255;
           }
-          MI = tMI;         
+          MI = tMI;
           setFont(LARGE, 255, 255, 255, 0, 0, 0);
-          myGLCD.print("   ", CENTER, 120);         
+          myGLCD.print("   ", CENTER, 120);
           myGLCD.printNumI(tMI, CENTER, 120);
         }
         break;
@@ -4776,44 +4806,44 @@ void processMyTouch()
           dispScreen=8;
           if (COLOR==1) {
             for (int i; i<96; i++) {
-              wled[i]=tled[i]; 
+              wled[i]=tled[i];
             }
           }
           if (COLOR==2) {
             for (int i; i<96; i++) {
-              bled[i]=tled[i]; 
+              bled[i]=tled[i];
             }
           }
           if (COLOR==3) {
             for (int i; i<96; i++) {
-              rbled[i]=tled[i]; 
+              rbled[i]=tled[i];
             }
           }
           if (COLOR==4) {
             for (int i; i<96; i++) {
-              rled[i]=tled[i]; 
+              rled[i]=tled[i];
             }
-          }  
+          }
           if (COLOR==5) {
             for (int i; i<96; i++) {
-              uvled[i]=tled[i]; 
+              uvled[i]=tled[i];
             }
           }
           if (COLOR==6) {
             for (int i; i<96; i++) {
-              sled[i]=tled[i]; 
+              sled[i]=tled[i];
             }
           }
           clearScreen();
           ledValuesScreen();
-        }   
+        }
 
         else if ((y>=15) && (y<=40))        //top row with times was touched
         {
           if ((x>=4) && (x<=316))
           {
             int oldLCT = LedChangTime;
-            LedChangTime = map(x, 3, 320, 0, 12);                
+            LedChangTime = map(x, 3, 320, 0, 12);
 
             if (oldLCT != LedChangTime)   //highlight touched time
             {
@@ -4837,15 +4867,15 @@ void processMyTouch()
               }
             }
           }
-        } 
+        }
         else if ((y>=70) && (y<=95))        //plus buttons were touched
         {
-          for (int i=0; i<8; i++) {                
+          for (int i=0; i<8; i++) {
             if ((x>=(i*38)+10) && (x<=(i*38)+35)) {
               int k= (LedChangTime*8)+i;
               tled[k]++;
               if (tled[k]>255) {
-                tled[k]=255; 
+                tled[k]=255;
               }
               myGLCD.printNumI( tled[k], (i*38)+12, 105);
             }
@@ -4853,12 +4883,12 @@ void processMyTouch()
         }
         else if ((y>=125) && (y<=150))      //minus buttons were touched
         {
-          for (int i=0; i<8; i++) {                
+          for (int i=0; i<8; i++) {
             if ((x>=(i*38)+10) && (x<=(i*38)+35)) {
               int k= (LedChangTime*8)+i;
               tled[k]--;
               if (tled[k]<0) {
-                tled[k]=0; 
+                tled[k]=0;
               }
               myGLCD.print( "  ", (i*38)+20, 105);
               myGLCD.printNumI( tled[k], (i*38)+12, 105);
@@ -4878,8 +4908,8 @@ void processMyTouch()
           WaveMakerSettingsScreen();
           waveMakerOff=true;
           digitalWrite(WaveMakerTop, LOW);
-          digitalWrite(WaveMakerBottom, LOW);    
-        } 
+          digitalWrite(WaveMakerBottom, LOW);
+        }
         else
           if ((x>=165) && (x<=315) && (y>=20) && (y<=40))    //press Synchronous Mode
           {
@@ -4888,12 +4918,12 @@ void processMyTouch()
             dispScreen=11;
             clearScreen();
             WaveMakerSettingsScreen();
-            synchronousSynch();    
+            synchronousSynch();
             waveMakerOff=true;
             digitalWrite(WaveMakerTop, LOW);
-            digitalWrite(WaveMakerBottom, LOW);    
-          } 
-          else             
+            digitalWrite(WaveMakerBottom, LOW);
+          }
+          else
             if ((x>=165) && (x<=315) && (y>=46) && (y<=66))    //press Turn Pumps OFF/ON
           {
             waitForIt(165, 46, 315, 66);
@@ -4907,8 +4937,8 @@ void processMyTouch()
               WAVE=3;
               WaveMakerStatusScreen();
             }
-          } 
-          else 
+          }
+          else
             if ((x>=5) && (x<=155) && (y>=46) && (y<=66))      //press Feeding Mode
           {
             waitForIt(5, 46, 155, 66);
@@ -4927,7 +4957,7 @@ void processMyTouch()
               SEC_O = 0;
               WaveMakerStatusScreen();
             }
-          } 
+          }
         break;
 
       case 11:     //---------------- WAVEMAKER SETTINGS SCREEN --------------
@@ -4943,7 +4973,7 @@ void processMyTouch()
             clearScreen();
             WaveMakerScreen();
             WaveMakerStatusScreen();
-          } 
+          }
           else
             if ((x>=110) && (x<=210))                       //press TEST
             {
@@ -4952,25 +4982,25 @@ void processMyTouch()
               myGLCD.fillRoundRect(110, 200, 210, 220);    //TEST Button in Green
               setFont(SMALL, 0, 0, 0, 0, 255, 0);
               myGLCD.print("TESTING", 132, 204);
-              myGLCD.setColor(255, 255, 255);            
+              myGLCD.setColor(255, 255, 255);
               myGLCD.drawRoundRect(110, 200, 210, 220);
               waveMakerOff=false;
               waveMakerTest=true;
-            } 
+            }
             else
               if ((x>=210) && (x<=315))                       //press SAVE
               {
                 waitForIt(215, 200, 315, 220);
-                if (WAVE==1) { 
-                  Pump1m=Min1; 
-                  Pump1s=Sec1; 
-                  Pump2m=Min2; 
+                if (WAVE==1) {
+                  Pump1m=Min1;
+                  Pump1s=Sec1;
+                  Pump2m=Min2;
                   Pump2s=Sec2;
                 }
-                if (WAVE==2) { 
-                  OnForTm=Min1; 
-                  OnForTs=Sec1; 
-                  OffForTm=Min2; 
+                if (WAVE==2) {
+                  OnForTm=Min1;
+                  OnForTs=Sec1;
+                  OffForTm=Min2;
                   OffForTs=Sec2;
                 }
                 SaveWaveToEEPROM();
@@ -4982,10 +5012,10 @@ void processMyTouch()
                 WaveMakerStatusScreen();
               }
         }
-        else 
+        else
         {
           if (WAVE==1)                                    //Alternating Mode Settings
-          { 
+          {
             waveModePlusMinus();
           }
 
@@ -4996,8 +5026,8 @@ void processMyTouch()
               waitForIt(5, 20, 155, 40);
               Synch=1;
               synchronousSynch();
-            } 
-            else 
+            }
+            else
               if ((x>=165) && (x<=315) && (y>=20) && (y<=40))  //Pulsating Mode
             {
               waitForIt(165, 20, 315, 40);
@@ -5038,57 +5068,57 @@ void processMyTouch()
         if ((x>=195) && (x<=235))                         //first column
         {
           if ((y>=76) && (y<=96))                        //press 12HR Button
-          { 
+          {
             waitForIt(195, 76, 235, 96);
             setTimeFormat = 1;
             genSetSelect();
           }
           if ((y>=107) && (y<=127))                      //press deg C
-          { 
+          {
             waitForIt(195, 107, 235, 127);
             setTempScale = 0;
-            genSetSelect();            
+            genSetSelect();
           }
           if ((y>=138) && (y<=158))                      //press Screensaver ON
-          { 
+          {
             waitForIt(195, 138, 235, 158);
             setScreensaver = 1;
-            genSetSelect();                 
+            genSetSelect();
           }
           if ((y>=169) && (y<=189))                      //press Auto-Stop on Feed ON
-          { 
+          {
             waitForIt(195, 169, 235, 189);
             setAutoStop = 1;
-            genSetSelect();                       
-          }           
-        } 
+            genSetSelect();
+          }
+        }
         if ((x>=255) && (x<=295))                         //second column
         {
           if ((y>=76) && (y<=96))                        //press 24HR Button
-          { 
+          {
             waitForIt(255, 76, 295, 96);
             setTimeFormat = 0;
-            genSetSelect();            
+            genSetSelect();
           }
           if ((y>=107) && (y<=127))                      //press deg F
-          { 
+          {
             waitForIt(255, 107, 295, 127);
             setTempScale = 1;
-            genSetSelect();               
+            genSetSelect();
           }
           if ((y>=138) && (y<=158))                      //press Screensaver OFF
-          { 
+          {
             waitForIt(255, 138, 295, 158);
             setScreensaver = 2;
-            genSetSelect();                      
+            genSetSelect();
           }
           if ((y>=169) && (y<=189))                      //press Auto-Stop on Feed OFF
-          { 
+          {
             waitForIt(255, 169, 295, 189);
             setAutoStop = 2;
-            genSetSelect();                      
-          }           
-        } 
+            genSetSelect();
+          }
+        }
 
         break;
 
@@ -5100,7 +5130,7 @@ void processMyTouch()
           dispScreen=14;
           clearScreen();
           setFeederTimesScreen();
-        } 
+        }
         else
           if ((x>=165) && (x<=315) && (y>=20) && (y<=40))    //press Feeding Time 2
           {
@@ -5109,7 +5139,7 @@ void processMyTouch()
             dispScreen=14;
             clearScreen();
             setFeederTimesScreen();
-          } 
+          }
           else
             if ((x>=5) && (x<=155) && (y>=168) && (y<=188))      //press Feeding Time 3
             {
@@ -5118,7 +5148,7 @@ void processMyTouch()
               dispScreen=14;
               clearScreen();
               setFeederTimesScreen();
-            } 
+            }
             else
               if ((x>=165) && (x<=315) && (y>=168) && (y<=188))    //press Feeding Time 4
               {
@@ -5127,7 +5157,7 @@ void processMyTouch()
                 dispScreen=14;
                 clearScreen();
                 setFeederTimesScreen();
-              } 
+              }
               else
                 if ((x>=85) && (x<=235) && (y>=94) && (y<=114))      //press Feeding Fish Now!
                 {
@@ -5135,36 +5165,36 @@ void processMyTouch()
                   myGLCD.setColor(0, 255, 0);
                   myGLCD.fillRoundRect(85, 94, 235, 114);
                   myGLCD.setColor(255, 255, 255);
-                  myGLCD.drawRoundRect(85, 94, 235, 114); 
+                  myGLCD.drawRoundRect(85, 94, 235, 114);
                   setFont(SMALL, 0, 0, 0, 0, 255, 0);
-                  myGLCD.print("Now Feeding", 118, 98); 
+                  myGLCD.print("Now Feeding", 118, 98);
                   digitalWrite(autoFeeder, HIGH);
                   delay(5000);
                   myGLCD.setColor(153, 0, 102);
                   myGLCD.fillRoundRect(85, 94, 235, 114);
                   myGLCD.setColor(255, 255, 255);
-                  myGLCD.drawRoundRect(85, 94, 235, 114); 
+                  myGLCD.drawRoundRect(85, 94, 235, 114);
                   setFont(SMALL, 255, 255, 255, 153, 0, 102);
-                  myGLCD.print("Feed Fish Now!", 106, 98);  
+                  myGLCD.print("Feed Fish Now!", 106, 98);
                   digitalWrite(autoFeeder, LOW);
-                } 
+                }
         break;
 
       case 14:     //------------ SET AUTOMATIC FISH FEEDER TIMES ------------
-        if ((x>=back[0]) && (x<=back[2]) && (y>back[1]) && (y<=back[3]))          //press back    
+        if ((x>=back[0]) && (x<=back[2]) && (y>back[1]) && (y<=back[3]))          //press back
         {
           waitForIt(back[0], back[1], back[2], back[3]);
           ReadFromEEPROM();
-          if ((timeDispH>=0) && (timeDispH<=11)) { 
+          if ((timeDispH>=0) && (timeDispH<=11)) {
             AM_PM=1;
           }
-          else { 
+          else {
             AM_PM=2;
           }
           dispScreen=13;
           clearScreen();
           autoFeederScreen();
-        } 
+        }
         else
           if ((x>=prSAVE[0]) && (x<=prSAVE[2]) && (y>=prSAVE[1]) && (y<=prSAVE[3])) //press SAVE
           {
@@ -5172,86 +5202,86 @@ void processMyTouch()
             if (setTimeFormat==1)
             {
               if ((rtcSet[2]==0) && (AM_PM==2))
-              { 
+              {
                 rtcSet[2]+=12;
               }
               if (((rtcSet[2]>=1) && (rtcSet[2]<=11)) && (AM_PM==2))
-              { 
+              {
                 rtcSet[2]+=12;
-              }  
+              }
               if (((rtcSet[2]>=12) && (rtcSet[2]<=23)) && (AM_PM==1))
-              { 
+              {
                 rtcSet[2]-=12;
-              }           
-            }                  
+              }
+            }
             if (feedTime==1)
-            { 
-              feedFish1H=rtcSet[2]; 
+            {
+              feedFish1H=rtcSet[2];
               feedFish1M=rtcSet[1];
             }
             if (feedTime==2)
-            { 
-              feedFish2H=rtcSet[2]; 
+            {
+              feedFish2H=rtcSet[2];
               feedFish2M=rtcSet[1];
             }
             if (feedTime==3)
-            { 
-              feedFish3H=rtcSet[2]; 
+            {
+              feedFish3H=rtcSet[2];
               feedFish3M=rtcSet[1];
             }
             if (feedTime==4)
-            { 
-              feedFish4H=rtcSet[2]; 
+            {
+              feedFish4H=rtcSet[2];
               feedFish4M=rtcSet[1];
-            }        
+            }
             SaveFeedTimesToEEPROM();
             dispScreen=13;
             clearScreen();
             autoFeederScreen();
-          } 
+          }
           else
             if ((x>=70) && (x<=250) && (y>=150) && (y<=170))     //Feeding ON/OFF
             {
               waitForIt(70, 150, 250, 170);
-              if (feedTime==1) 
-              { 
-                if (FEEDTime1==1) { 
+              if (feedTime==1)
+              {
+                if (FEEDTime1==1) {
                   FEEDTime1=0;
-                } 
-                else { 
+                }
+                else {
                   FEEDTime1=1;
                 }
               }
-              if (feedTime==2) 
-              { 
-                if (FEEDTime2==1) { 
+              if (feedTime==2)
+              {
+                if (FEEDTime2==1) {
                   FEEDTime2=0;
-                } 
-                else { 
+                }
+                else {
                   FEEDTime2=1;
                 }
               }
-              if (feedTime==3) 
-              { 
-                if (FEEDTime3==1) { 
+              if (feedTime==3)
+              {
+                if (FEEDTime3==1) {
                   FEEDTime3=0;
-                } 
-                else { 
+                }
+                else {
                   FEEDTime3=1;
                 }
               }
-              if (feedTime==4) 
-              { 
-                if (FEEDTime4==1) { 
+              if (feedTime==4)
+              {
+                if (FEEDTime4==1) {
                   FEEDTime4=0;
-                } 
-                else { 
+                }
+                else {
                   FEEDTime4=1;
                 }
               }
               feedingTimeOnOff();
-            } 
-            else      
+            }
+            else
           {
             if ((y>=houP[1]) && (y<=houP[3]))                 //FIRST ROW
             {
@@ -5259,9 +5289,9 @@ void processMyTouch()
               {
                 waitForIt(houP[0], houP[1], houP[2], houP[3]);
                 rtcSet[2]++;
-                if (rtcSet[2]>=24) 
-                { 
-                  rtcSet[2]=0; 
+                if (rtcSet[2]>=24)
+                {
+                  rtcSet[2]=0;
                 }
               }
               if ((x>=minP[0]) && (x<=minP[2]))              //press min up
@@ -5269,7 +5299,7 @@ void processMyTouch()
                 waitForIt(minP[0], minP[1], minP[2], minP[3]);
                 rtcSet[1]++;
                 if (rtcSet[1]>=60) {
-                  rtcSet[1]=0; 
+                  rtcSet[1]=0;
                 }
               }
               if ((x>=ampmP[0]) && (x<=ampmP[2]))            //press AMPM up
@@ -5287,11 +5317,11 @@ void processMyTouch()
             {
               if ((x>=houM[0]) && (x<=houM[2]))              //press hour down
               {
-                waitForIt(houM[0], houM[1], houM[2], houM[3]);             
+                waitForIt(houM[0], houM[1], houM[2], houM[3]);
                 rtcSet[2]--;
-                if (rtcSet[2]<0) 
-                { 
-                  rtcSet[2]=23; 
+                if (rtcSet[2]<0)
+                {
+                  rtcSet[2]=23;
                 }
               }
               if ((x>=minM[0]) && (x<=minM[2]))              //press min down
@@ -5299,8 +5329,8 @@ void processMyTouch()
                 waitForIt(minM[0], minM[1], minM[2], minM[3]);
                 rtcSet[1]--;
                 if (rtcSet[1]<0) {
-                  rtcSet[1]=59; 
-                } 
+                  rtcSet[1]=59;
+                }
               }
               if ((x>=ampmM[0]) && (x<=ampmM[2]))            //press AMPM down
               {
@@ -5311,16 +5341,16 @@ void processMyTouch()
                 else {
                   AM_PM=1;
                 }
-              }  
-            } 
+              }
+            }
             setFeederTimesScreen(false);
           }
         break;
 
       case 15:     //------------------------- ABOUT -------------------------
         break;
-      } 
-    } 
+      }
+    }
   delay(100);
 }
 /********************************* END of TOUCH SCREEN ********************************/
@@ -5335,7 +5365,7 @@ void setup()
   TCCR5A = B00101011; // Fast PWM change at OCR5A (Timer 5 - pins 44 & 45)
   TCCR5B = B10001;    // No Prescalering (Timer 5 - pins 44 & 45)
 
-  pinMode(ledPinSump, OUTPUT);  
+  pinMode(ledPinSump, OUTPUT);
   pinMode(ledPinBlue, OUTPUT);
   pinMode(ledPinWhite, OUTPUT);
   pinMode(ledPinRoyBlue, OUTPUT);
@@ -5355,9 +5385,9 @@ void setup()
   pinMode(WaveMakerTop, OUTPUT);
   pinMode(WaveMakerBottom, OUTPUT);
 
-  pinMode(autoFeeder, OUTPUT);  
+  pinMode(autoFeeder, OUTPUT);
 
-//  Serial.write(" Init Screen");   
+//  Serial.write(" Init Screen");
   myGLCD.InitLCD(LANDSCAPE);
   myGLCD.clrScr();
 
@@ -5380,7 +5410,7 @@ void setup()
   min_cnt= (rtc[2]*60)+rtc[1];
   ReadFromEEPROM();
   LED_levels_output();
-  wave_output();  
+  wave_output();
  // Serial.write(" Init Mainscreen");
   mainScreen(true);
   Serial.write(" Init End");
@@ -5391,46 +5421,46 @@ void setup()
 /********************************** BEGIN MAIN LOOP **********************************/
 void loop()
 {
-  if ((myTouch.dataAvailable()) && (screenSaverTimer>=setScreenSaverTimer))  
+  if ((myTouch.dataAvailable()) && (screenSaverTimer>=setScreenSaverTimer))
   {
     LEDtestTick = false;
     myGLCD.setColor(64, 64, 64);
-    myGLCD.fillRect(0, 226, 319, 239);                     //Bottom Bar    
+    myGLCD.fillRect(0, 226, 319, 239);                     //Bottom Bar
     screenSaverTimer=0;
-    clearScreen();     
+    clearScreen();
     mainScreen(true);
     delay(1000);
     dispScreen=0;
-  } 
-  else 
+  }
+  else
   {
-    if (myTouch.dataAvailable())  
-    { 
+    if (myTouch.dataAvailable())
+    {
       processMyTouch();
     }
   }
 
-  if (waveMakerOff==false) 
-  { 
+  if (waveMakerOff==false)
+  {
     wave_output();
   }
-  else 
-  { 
-    PumpTstate=LOW; 
+  else
+  {
+    PumpTstate=LOW;
     PumpBstate=LOW;
   }
 
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillisFive > 5000)   //check time, temp and LED levels every 5s
   {
-    previousMillisFive = currentMillis;  
+    previousMillisFive = currentMillis;
     RTC.get(rtc,true);
 
     feedingTimeOutput();
 
     if (screenSaverTimer<setScreenSaverTimer)
-    { 
-      TimeDateBar(); 
+    {
+      TimeDateBar();
     }
 
     checkTempC();
@@ -5444,8 +5474,8 @@ void loop()
     screenReturn();
     screenSaver();
 
-    if ((dispScreen == 0) && (screenSaverTimer<setScreenSaverTimer)) 
-    { 
+    if ((dispScreen == 0) && (screenSaverTimer<setScreenSaverTimer))
+    {
       mainScreen();
     }
   }
