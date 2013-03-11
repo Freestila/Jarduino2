@@ -1,3 +1,4 @@
+
 //************************************************************************************/
 // Jarduino Aquarium Controller v.1.1 - release date: April 2012
 //   Written and Debugged by Jamie M. Jardin
@@ -80,7 +81,24 @@
 #include <DS1307.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <EasyTransfer.h>
 
+//dimm execution
+
+struct SEND_DATA_STRUCTURE {
+	//put your variable definitions here for the data you want to send
+	//THIS MUST BE EXACTLY THE SAME ON THE OTHER ARDUINO
+	uint8_t blau1;
+	uint8_t blau2;
+	uint8_t weiss1;
+	uint8_t weiss2;
+	uint8_t weiss3;
+};
+//create object
+EasyTransfer ET;
+
+//give a name to the group of data
+SEND_DATA_STRUCTURE mydata;
 
 //Default Controller Settings
 boolean RECOM_RCD = true;            //For Mean Well drivers change "true" to "false"
@@ -157,7 +175,7 @@ float alarmTempF = 0.0;
 boolean tempCoolflag = 0;            //1 if cooling on
 boolean tempHeatflag = 0;            //1 if heating on
 boolean tempAlarmflag = 0;           //1 if alarm on
-long intervalAlarm = 1000 * 30;      //Interval to beep the Alarm (1000 * seconds)
+unsigned long intervalAlarm = 1000 * 30;      //Interval to beep the Alarm (1000 * seconds)
 float temp2beS;                      //Temporary Temperature Values
 float temp2beO;                      //Temporary Temperature Values
 float temp2beA;                      //Temporary Temperature Values
@@ -202,10 +220,10 @@ int dispScreen=0;                    //0-Main Screen, 1-Menu, 2-Clock Setup, 3-T
 
 int x, y;                            //touch coordinates
 
-long previousMillisLED = 0;          //Used in the Test LED Array Function
-long previousMillisWave = 0;         //Used in the WaveMaker Function wave_output()
-long previousMillisFive = 0;         //Used in the Main Loop (Checks Time,Temp,LEDs,Screen)
-long previousMillisAlarm = 0;        //Used in the Alarm
+unsigned long previousMillisLED = 0;          //Used in the Test LED Array Function
+unsigned long previousMillisWave = 0;         //Used in the WaveMaker Function wave_output()
+unsigned long previousMillisFive = 0;         //Used in the Main Loop (Checks Time,Temp,LEDs,Screen)
+unsigned long previousMillisAlarm = 0;        //Used in the Alarm
 
 int setScreensaver = 2;              //ON=1 || OFF=2 (change in prog)
 int screenSaverTimer = 0;            //counter for Screen Saver
@@ -219,10 +237,10 @@ setScreenSaverTimer * .75;       //Will return to main screen after 75% of the a
 
 boolean waveMakerOff = false;        //For Turning ON/OFF WaveMaker
 boolean waveMakerTest = false;       //For Testing Wave Settings
-long wPump1, wPump2;                 //Total Alternating Times
-long intervalAlt = wPump1;           //Changing Interval for Alternating Mode
-long wOnForT, wOffForT;              //Total Synchronous-Pulse Times
-long intervalSynch = wOnForT;        //Changing Interval for Synch-Pulse Mode
+unsigned long wPump1, wPump2;                 //Total Alternating Times
+unsigned long intervalAlt = wPump1;           //Changing Interval for Alternating Mode
+unsigned long wOnForT, wOffForT;              //Total Synchronous-Pulse Times
+unsigned long intervalSynch = wOnForT;        //Changing Interval for Synch-Pulse Mode
 int PumpTstate = LOW;                //Used to set the Top Powerhead ON or OFF
 int PumpBstate = LOW;                //Used to set the Bottom Powerhead ON or OFF
 
@@ -239,8 +257,8 @@ tTime1=0, tTime2=0;
 int WaveCorrector = 2;               //Fix for halving of wave seconds (Change to "1" if
 //your wave seconds are doubled)
 
-long previousMillisCt = 0;           //stores the last update for the Countdown Timer
-long intervalCt = 1000;              //One Second Interval for Countdown Timer
+unsigned long previousMillisCt = 0;           //stores the last update for the Countdown Timer
+unsigned long intervalCt = 1000;              //One Second Interval for Countdown Timer
 int countDown  = 5*60 + 0;           //Countdown for 5 minutes and zero seconds
 int MIN_O = 5;                       //Start the Time at 5 (for looks only)
 int SEC_T = 0;
@@ -318,30 +336,30 @@ byte bled[96] = {
   0, 0, 0, 0, 0, 0, 0, 0,                   //0 - 1
   0, 0, 0, 0, 0, 0, 0, 0,                   //2 - 3
   0, 0, 0, 0, 0, 0, 0, 0,                   //4 - 5
-  0, 0, 0, 0, 0, 0, 28, 28,                 //6 - 7
-  30, 30, 32, 55, 70, 70, 75, 80,           //8 - 9
-  80, 85, 90, 110, 120, 125, 130, 135,      //10 - 11
-  140, 145, 150, 160, 160, 160, 165, 170,   //12 - 13
-  175, 180, 185, 190, 195, 195, 195, 195,   //14 - 15
-  195, 195, 195, 195, 190, 185, 180, 175,   //16 - 17
-  170, 165, 160, 160, 160, 150, 145, 140,   //18 - 19
-  135, 130, 125, 115, 100, 75, 60, 30,      //20 - 21
-  30, 30, 28, 28, 0, 0, 0, 0                //22 - 23
+  0, 0, 0, 0, 0, 0, 0, 0,                 //6 - 7
+  5, 10, 30, 80, 80, 120, 120, 160,           //8 - 9
+  160, 200, 255,255 , 255, 255, 255, 255,      //10 - 11
+  255, 255, 255, 255, 255, 255, 255, 255,   //12 - 13
+  255, 255, 255, 255, 255, 255, 255, 255,   //14 - 15
+  255, 255, 255, 255, 255, 255, 255, 255,   //16 - 17
+  255, 255, 255, 255, 255, 255, 255, 255,   //18 - 19
+  255, 255, 255, 255, 200, 180, 140, 100,      //20 - 21
+  30, 20, 10, 5, 0, 0, 0, 0                //22 - 23
 };
 //WHITE Dimming Values (White LED array in RAM)
 byte wled[96] = {
-  0, 0, 0, 0, 0, 0, 0, 0,                   //0 - 1
-  0, 0, 0, 0, 0, 0, 0, 0,                   //2 - 3
-  0, 0, 0, 0, 0, 0, 0, 0,                   //4 - 5
-  0, 0, 0, 0, 0, 0, 0, 0,                   //6 - 7
-  0, 0, 0, 0, 0, 0, 0, 0,                   //8 - 9
-  28, 32, 38, 50, 70, 90, 90, 90,           //10 - 11
-  95, 95, 95, 95, 105, 105, 105, 105,       //12 - 13
-  120, 120, 120, 120, 125, 125, 125, 125,   //14 - 15
-  125, 125, 125, 125, 120, 120, 120, 120,   //16 - 17
-  115, 115, 115, 110, 100, 100, 95, 95,     //18 - 19
-  70, 50, 38, 32, 28, 0, 0, 0,              //20 - 21
-  0, 0, 0, 0, 0, 0, 0, 0                    //22 - 23
+		 0, 0, 0, 0, 0, 0, 0, 0,                   //0 - 1
+		  0, 0, 0, 0, 0, 0, 0, 0,                   //2 - 3
+		  0, 0, 0, 0, 0, 0, 0, 0,                   //4 - 5
+		  0, 0, 0, 0, 0, 0, 0, 0,                 //6 - 7
+		  5, 10, 30, 80, 80, 120, 120, 160,           //8 - 9
+		  160, 200, 255,255 , 255, 255, 255, 255,      //10 - 11
+		  255, 255, 255, 255, 255, 255, 255, 255,   //12 - 13
+		  255, 255, 255, 255, 255, 255, 255, 255,   //14 - 15
+		  255, 255, 255, 255, 255, 255, 255, 255,   //16 - 17
+		  255, 255, 255, 255, 255, 255, 255, 255,   //18 - 19
+		  255, 255, 255, 255, 200, 180, 140, 100,      //20 - 21
+		  30, 20, 10, 5, 0, 0, 0, 0                //22 - 23
 };
 //ROYAL BLUE Dimming Values
 byte rbled[96] = {
@@ -746,64 +764,54 @@ void SaveRTC()
 /********************************** TIME AND DATE BAR **********************************/
 void TimeDateBar(boolean refreshAll=false)
 {
-  char oldVal[11], rtc1[3], rtc2[3], ampm[4], month[4];
-    Serial.print("Time: ");
-        Serial.print(rtc[1]);
-        Serial.print(" - ");
-        Serial.print(rtc[2]);
-        Serial.print(" - ");
-        Serial.print(rtc[3]);
-        Serial.print(" - ");
-        Serial.print(rtc[4]);
-        Serial.print(" - ");
-        Serial.print(rtc[5]);
-        Serial.print(" - ");
-        Serial.print(rtc[6]);
-        Serial.println(" - ");
+  char oldVal[16], rtc1[3], rtc2[3], ampm[6], month[5];
+
 
   if ((rtc[1]>=0) && (rtc[1]<=9))
   {
-	  snprintf(rtc1,3,"%i%i",0,rtc[1]);
+	  sprintf(rtc1,"%i%i",0,rtc[1]);
 //    rtc1= '0' + String(rtc[1]);
   }               //adds 0 to minutes
   else {
-	  snprintf(rtc1,3,"%i",rtc[1]);
+	  sprintf(rtc1,"%i",rtc[1]);
 //    rtc1= String(rtc[1]);
   }
 
   if (setTimeFormat==1)
   {
     if (rtc[2]== 0) {
-    	snprintf(rtc2,3,"%i",12);
+    	sprintf(rtc2,"%i",12);
 //      rtc2=String( 12);
     }                //12 HR Format
     else {
       if (rtc[2]>12) {
-    	  snprintf(rtc2,3,"%i",rtc[2]-12);
+    	  sprintf(rtc2,"%i",rtc[2]-12);
 //        rtc2= String( rtc[2]-12);
       }
       else {
-    	  snprintf(rtc2,3,"%i",rtc[2]);
+    	  sprintf(rtc2,"%i",rtc[2]);
 //        rtc2= String(rtc[2]);
       }
     }
   }
 
   if(rtc[2] < 12){
-    ampm= " AM  ";
+	  sprintf(ampm," AM  ");
+//    ampm=" AM  ";
   }              //Adding the AM/PM sufffix
   else {
-    ampm= " PM  ";
+	  sprintf(ampm," PM  ");
+//    ampm= " PM  ";
   }
 
-  oldVal = time;                                 //refresh time if different
+  sprintf(oldVal,"%i",time);                                 //refresh time if different
   if (setTimeFormat==1)
   {
-	  snprintf (time,11,"%s:%s%s",rtc2,rtc1, ampm);
+	  sprintf (time,"%s:%s%s",rtc2,rtc1, ampm);
 //    time= rtc2 + ':' + rtc1 + ampm;
   }
   else {
-	  snprintf (time,11," :%i:%s      ",rtc[2],rtc1);
+	  sprintf (time," %i:%s      ",rtc[2],rtc1);
 //    time= " " + String(rtc[2]) + ':' + rtc1 +"      ";
   }
   if ((oldVal!=time) || refreshAll)
@@ -814,60 +822,62 @@ void TimeDateBar(boolean refreshAll=false)
     myGLCD.print(time, 215, 227);            //Display time
   }
 
+
+
   if (rtc[5]==1)  {
-    month= "JAN ";
+	  sprintf(month , "JAN ");
   }             //Convert the month to its name
   if (rtc[5]==2)  {
-    month= "FEB ";
+	  sprintf(month ,  "FEB ");
   }
   if (rtc[5]==3)  {
-    month= "MAR ";
+	  sprintf(month , "MAR ");
   }
   if (rtc[5]==4)  {
-    month= "APR ";
+	  sprintf(month , "APR ");
   }
   if (rtc[5]==5)  {
-    month= "MAY ";
+	  sprintf(month , "MAY ");
   }
   if (rtc[5]==6)  {
-    month= "JUN ";
+	  sprintf(month , "JUN ");
   }
   if (rtc[5]==7)  {
-    month= "JLY ";
+	  sprintf(month , "JLY ");
   }
   if (rtc[5]==8)  {
-    month= "AUG ";
+	  sprintf(month ,  "AUG ");
   }
   if (rtc[5]==9)  {
-    month= "SEP ";
+	  sprintf(month ,  "SEP ");
   }
   if (rtc[5]==10) {
-    month= "OCT ";
+	  sprintf(month ,  "OCT ");
   }
   if (rtc[5]==11) {
-    month= "NOV ";
+	  sprintf(month , "NOV ");
   }
   if (rtc[5]==12) {
-    month= "DEC ";
+	  sprintf(month ,  "DEC ");
   }
 
-  oldVal = date;                                 //refresh date if different
+  sprintf( oldVal, "%s", date);                                 //refresh date if different
 //  date.reserve(24);
   if (setCalendarFormat==0)
   {
-	  snprintf (date,15,"  %i/%i/%i   ",rtc[4],rtc[5],rtc[6]);
+	  sprintf (date,"  %i/%i/%i   ",rtc[4],rtc[5],rtc[6]);
 //    date= "  " + String(rtc[4]) + "/" + String(rtc[5]) + "/" + String(rtc[6]) + "   ";
 
   }
   else
   {
         Serial.println("Calendar 1");
-        snprintf (date,14,"  %s%i, %i",month,rtc[4], rtc[6]);
+        sprintf (date,"  %s%i, %i",month,rtc[4], rtc[6]);
 //    date= "  " + month + String(rtc[4]) + ',' + ' ' + String(rtc[6]);
   }
   if ((oldVal!=date) || refreshAll)
   {
-    char bufferD[15];
+//    char bufferD[15];
 //    date.toCharArray(bufferD, 15);              //String to Char array
     setFont(SMALL, 255, 255, 0, 64, 64, 64);
     myGLCD.print(date, 20, 227);             //Display date
@@ -951,13 +961,15 @@ void LED_levels_output()
     moon_out = 255 - moonled_out;
   }
 
-  analogWrite(ledPinSump, s_out);
-  analogWrite(ledPinBlue, b_out);
-  analogWrite(ledPinWhite, w_out);
-  analogWrite(ledPinRoyBlue, rb_out);
-  analogWrite(ledPinRed, r_out);
-  analogWrite(ledPinUV, uv_out);
-  analogWrite(ledPinMoon, moon_out);
+//  analogWrite(ledPinSump, s_out);
+//  analogWrite(ledPinBlue, b_out);
+//  analogWrite(ledPinWhite, w_out);
+//  analogWrite(ledPinRoyBlue, rb_out);
+//  analogWrite(ledPinRed, r_out);
+//  analogWrite(ledPinUV, uv_out);
+//  analogWrite(ledPinMoon, moon_out);
+
+  setzeDimmWerte(w_out, b_out);
 }
 
 int check( byte *pt1, byte *pt2, int lstep)
@@ -1206,47 +1218,56 @@ float moonPhase(int moonYear, int moonMonth, int moonDay)
   //Determine the Lunar Phase
   if ((AG >= 0) && (AG <= 1.85))             //New Moon; ~0-12.5% illuminated
   {
-    LP = "    New Moon   ";
+	  sprintf( LP, "    New Moon   ");
+//    LP = "    New Moon   ";
     MoonPic = New_Moon;
   }
   if ((AG > 1.85) && (AG <= 5.54))           //New Crescent; ~12.5-37.5% illuminated
   {
-    LP = "Waxing Crescent";
+	  sprintf( LP, "Waxing Crescent");
+//    LP = "Waxing Crescent";
     MoonPic = Waxing_Crescent;
   }
   if ((AG > 5.54) && (AG <= 9.23))           //First Quarter; ~37.5-62.5% illuminated
   {
-    LP = " First Quarter ";
+	  sprintf( LP, " First Quarter ");
+//    LP = " First Quarter ";
     MoonPic = First_Quarter;
   }
   if ((AG > 9.23) && (AG <= 12.92))          //Waxing Gibbous; ~62.5-87.5% illuminated
   {
-    LP = "Waxing Gibbous ";
+	  sprintf( LP, "Waxing Gibbous ");
+//    LP = "Waxing Gibbous ";
     MoonPic = Waxing_Gibbous;
   }
   if ((AG > 12.92) && (AG <= 16.61))         //Full Moon; ~87.5-100-87.5% illuminated
   {
-    LP = "   Full Moon   ";
+	  sprintf( LP, "   Full Moon   ");
+//    LP = "   Full Moon   ";
     MoonPic = Full_Moon;
   }
   if ((AG > 16.61) && (AG <= 20.30))         //Waning Gibbous; ~87.5-62.5% illuminated
   {
-    LP = "Waning Gibbous ";
+	  sprintf( LP, "Waning Gibbous ");
+//    LP = "Waning Gibbous ";
     MoonPic = Waning_Gibbous;
   }
   if ((AG > 20.30) && (AG <= 23.99))         //Last Quarter; ~62.5-37.5% illuminated
   {
-    LP = " Last Quarter  ";
+	  sprintf( LP, " Last Quarter  ");
+//    LP = " Last Quarter  ";
     MoonPic = Last_Quarter;
   }
   if ((AG > 23.99) && (AG <= 27.68))         //Old Crescent; ~37.5-12.5% illuminated
   {
-    LP = "Waning Crescent";
+	  sprintf( LP, "Waning Crescent");
+//    LP = "Waning Crescent";
     MoonPic = Waning_Crescent;
   }
   if ((AG >= 27.68) && (AG <= LC))           //New Moon; ~12.5-0% illuminated
   {
-    LP = "    New Moon   ";
+	  sprintf( LP, "    New Moon   ");
+//    LP = "    New Moon   ";
     MoonPic = New_Moon;
   }
 
@@ -1843,12 +1864,13 @@ void feedingTimeOnOff()
 void mainScreen(boolean refreshAll=false)
 {
   int ledLevel, t;
-  char oldval[16], deg;
+  char oldval[16];
 
   TimeDateBar(true);
   Serial.println("mainScreen1");
-  oldval = day;                                  //refresh day if different
-  snprintf(day,3,"%i",rtc[4]);
+  sprintf( oldval, "%s",day);
+//  oldval = day;                                  //refresh day if different
+  sprintf(day,"%i",rtc[4]);
 //  day = rtc[4];
   if ((oldval!=day) || refreshAll)
   {
@@ -1893,7 +1915,7 @@ void mainScreen(boolean refreshAll=false)
     ledLevel = LedToPercent(sled_out);
    // Serial.println(ledLevel);
    // Serial.println("- 1 -");
-    snprintf (oldval,17,"SUMP:   %i%%    ",ledLevel);
+    sprintf (oldval,"SUMP:   %i%%    ",ledLevel);
 //    oldval = "SUMP:   " + String(ledLevel) + "%    ";
     //oldval = "SUMP:   xx%   s ";
   //  Serial.println("- 3 -");
@@ -1923,7 +1945,7 @@ Serial.println("mainScreen 2-c");
     redLed = rled_out;
     ledLevel = LedToPercent(rled_out);
       Serial.println("mump 2");
-      snprintf (oldval,17,"Red:    %i%%    ",ledLevel);
+      sprintf (oldval,"Red:    %i%%    ",ledLevel);
 //    oldval = "Red:    " + String(ledLevel) + "%  " + "  ";
 //    char bufferR[13];
      Serial.println("mump 2");
@@ -1943,7 +1965,7 @@ Serial.println("mainScreen 2-c");
   {
     whiteLed = wled_out;
     ledLevel = LedToPercent(wled_out);
-    snprintf (oldval,17,"White:  %i%%    ",ledLevel);
+    sprintf (oldval,"White:  %i%%    ",ledLevel);
 //    oldval = "White:  " + String(ledLevel) + "%  " + "  ";
 //    char bufferW[13];
 //    oldval.toCharArray(bufferW, 13);
@@ -1962,7 +1984,7 @@ Serial.println("mainScreen 2-d");
   {
     blueLed = bled_out;
     ledLevel = LedToPercent(bled_out);
-    snprintf (oldval,17,"Blue:   %i%%    ",ledLevel);
+    sprintf (oldval,"Blue:   %i%%    ",ledLevel);
 //    oldval = "Blue:   " + String(ledLevel) + "%" + "  ";
 //    char bufferB[13];
 //    oldval.toCharArray(bufferB, 13);
@@ -1981,7 +2003,7 @@ Serial.println("mainScreen 2-d");
   {
     rblueLed = rbled_out;
     ledLevel = LedToPercent(rbled_out);
-    snprintf (oldval,17,"Royal:  %i%%    ",ledLevel);
+    sprintf (oldval,"Royal:  %i%%    ",ledLevel);
 //    oldval = "Royal:  " + String(ledLevel) + "%  " + "  ";
 //    char bufferRB[13];
 //    oldval.toCharArray(bufferRB, 13);
@@ -2000,7 +2022,7 @@ Serial.println("mainScreen 2-d");
   {
     uvLed = uvled_out;
     ledLevel = LedToPercent(uvled_out);
-    snprintf (oldval,17,"Ultra:  %i%%    ",ledLevel);
+    sprintf (oldval,"Ultra:  %i%%    ",ledLevel);
 //    oldval = "Ultra:  " + String(ledLevel) + "%  " + "  ";
 //    char bufferUV[13];
 //    oldval.toCharArray(bufferUV, 13);
@@ -2016,12 +2038,12 @@ Serial.println("mainScreen 2-d");
   }
   Serial.println("mainScreen 3");
   if (setTempScale==1) {
-    deg ="F";
+	 sprintf(degC_F ,"F");
   }               //Print deg C or deg F
   else {
-    deg = "C";
+	  sprintf(degC_F ,"C");
   }
-  degC_F=deg;
+
   //char bufferDeg[2];
  // degC_F.toCharArray(bufferDeg,2);
 
@@ -2370,7 +2392,7 @@ void timeCorrectFormat()
 /*********** H2O TEMP CONTROL SCREEN ********** dispScreen = 3 ************************/
 void tempScreen(boolean refreshAll=false)
 {
-  char deg[2];
+//  char deg[2];
   if (refreshAll)
   {
     if ((setTempC==0) && (setTempScale==0)) {
@@ -2400,12 +2422,15 @@ void tempScreen(boolean refreshAll=false)
     printButton("CANCEL", canC[0], canC[1], canC[2], canC[3], SMALL);
 
     if (setTempScale==1) {
-      deg ="F";
+//      deg ="F";
+    	sprintf( degC_F, "F");
     }                //Print deg C or deg F
     else {
-      deg = "C";
+//      deg = "C";
+      sprintf( degC_F, "C");
     }
-    degC_F=deg;
+    sprintf( degC_F, "C");
+//    degC_F=deg;
    // char bufferDeg[2];
 //    degC_F.toCharArray(bufferDeg,2);
 
@@ -2510,40 +2535,42 @@ void testArrayScreen(boolean refreshAll=false)
         int minut = min_cnt%60;
 
         if (hours<12){
-          AMPM="AM";
+        	sprintf(AMPM,"AM");
+//          AMPM="AM";
         }                              //Adding the AM/PM suffix
         else{
-          AMPM="PM";
+        	sprintf(AMPM,"PM");
+//          AMPM="PM";
         }
 //        snprintf (HOURS,3,"%i", hours);
 //        HOURS=String( hours);
-        snprintf (hrsPM,3,"%i", hours-12);
+        sprintf (hrsPM,"%i", hours-12);
 //        hrsPM=String( hours-12);
         if (hours==0){
 
-          hrs="12";
+        	sprintf(hrs,"12");
         }
         else {
           if ((hours>=1)&&(hours<=9)){
-        	  snprintf (hrs,3," %i", hours);
+        	  sprintf (hrs," %i", hours);
 //            hrs=" "+HOURS;
           }      //keep hours in place
           else {
             if ((hours>=13)&&(hours<=21)){
-            	 snprintf (hrs,3," %i", hrsPM);
+            	sprintf (hrs," %i", hrsPM);
 //              hrs=" " +hrsPM;
             } //convert to 12HR
             else {
               if ((hours>=22)&&(hours<24)){
 //            	  snprintf (hrs,3,"%i", hrsPM);
-                hrs=hrsPM;
+                sprintf(hrs,"%s",hrsPM);
               }
               else {
                 if (hours==24){
-                  hrs="12";
+                	 sprintf(hrs,"12");
                 }
                 else{
-                	 snprintf (hrs,3,"%i", hours);
+                	sprintf (hrs,"%i", hours);
 //                  hrs=HOURS;
                 }
               }
@@ -2553,16 +2580,16 @@ void testArrayScreen(boolean refreshAll=false)
 //        snprintf (mins,3,"%i", minut);
 //        mins=String( minut);                                            //add zero to minutes
         if ((minut>=0)&&(minut<=9)){
-        	 snprintf (Minutes,3,"0%i", minut);
+        	sprintf (Minutes,"0%i", minut);
 //          Minutes="0"+mins;
         }
         else {
-        	snprintf (Minutes,3,"%i", minut);
+        	sprintf (Minutes,"%i", minut);
 //          Minutes=mins;
         }
-
-        oldvalue=twelveHR;
-        snprintf (twelveHR,6,"%s:%s", hrs,Minutes);
+        sprintf( oldvalue, "%s",twelveHR);
+//        oldvalue=twelveHR;
+        sprintf (twelveHR,"%s:%s", hrs,Minutes);
 //        twelveHR=hrs+':'+Minutes;
         if ((oldvalue!=twelveHR)||refreshAll)
         {
@@ -2577,42 +2604,42 @@ void testArrayScreen(boolean refreshAll=false)
 
         char sled[13], rled[13],wled[13], bled[13],rbled[13],uvled[13];
         setFont(SMALL, 0, 150, 0, 0, 0, 0);
-        snprintf (sled,14,"SUMP:  %i   ", sled_out);
+        sprintf (sled,"SUMP:  %i   ", sled_out);
 //        String sled = "SUMP:  " + String(sled_out) + " " + " ";
 //        char bufferS[11];
 //        sled.toCharArray(bufferS, 11);
         myGLCD.print(sled, 145, 55);
 
         setFont(SMALL, 255, 0, 0, 0, 0, 0);
-        snprintf (rled,14,"Red:   %i   ", rled_out);
+        sprintf (rled,"Red:   %i   ", rled_out);
 //        String rled = "Red:   " + String(rled_out) + "  " + " ";
 //        char bufferR[11];
 //        rled.toCharArray(bufferR, 11);
         myGLCD.print(rled, 145, 67);
 
         setFont(SMALL, 255, 255, 255, 0, 0, 0);
-        snprintf (wled,14,"White: %i   ", wled_out);
+        sprintf (wled,"White: %i   ", wled_out);
 //        String wled = "White: " + String(wled_out) + " " + " ";
 //        char bufferW[11];
 //        wled.toCharArray(bufferW, 11);
         myGLCD.print(wled, 145, 79);
 
         setFont(SMALL, 9, 184, 255, 0, 0, 0);
-        snprintf (bled,14,"Blue:  %i   ", bled_out);
+        sprintf (bled,"Blue:  %i   ", bled_out);
 //        String bled = "Blue:  " + String(bled_out) + " " + " ";
 //        char bufferB[11];
 //        bled.toCharArray(bufferB, 11);
         myGLCD.print(bled, 235, 55);
 
         setFont(SMALL, 58, 95, 205, 0, 0, 0);
-        snprintf (rbled,14,"Royal: %i   ", rbled_out);
+        sprintf (rbled,"Royal: %i   ", rbled_out);
 //        String rbled = "Royal: " + String(rbled_out) + "  " + " ";
 //        char bufferRB[11];
 //        rbled.toCharArray(bufferRB, 11);
         myGLCD.print(rbled, 235, 67);
 
         setFont(SMALL, 224, 102, 255, 0, 0, 0);
-        snprintf (uvled,14,"Ultra: %i   ", uvled_out);
+        sprintf (uvled,"Ultra: %i   ", uvled_out);
 //        String uvled = "Ultra: " + String(uvled_out) + "  " + " ";
 //        char bufferUV[11];
 //        uvled.toCharArray(bufferUV, 11);
@@ -5409,6 +5436,7 @@ void setup()
   RTC.get(rtc,true);
   min_cnt= (rtc[2]*60)+rtc[1];
   ReadFromEEPROM();
+  initializeDimmExecution();
   LED_levels_output();
   wave_output();
  // Serial.write(" Init Mainscreen");
@@ -5481,4 +5509,35 @@ void loop()
   }
 }
 /********************************** END OF MAIN LOOP *********************************/
+
+/********************************* send dimm values *********************************/
+void setzeDimmWerte ( uint8_t weiss, uint8_t blau ) {
+
+
+	mydata.blau1 = blau;
+	mydata.blau2 = blau;
+	mydata.weiss1 = weiss;
+	mydata.weiss2 = weiss;
+	mydata.weiss3 = weiss;
+
+	sendeDimmWerte ();
+}
+void initializeDimmExecution(){
+
+Serial1.begin ( 9600 );
+	//start the library, pass in the data details and the name of the serial port. Can be Serial, Serial1, Serial2, etc.
+	ET.begin ( details(mydata), &Serial1 );
+}
+
+void sendeDimmWerte () {
+//	if ( debugMode ) {
+		Serial.print ( "Dimme: Weiss - " );
+		Serial.print ( mydata.blau1 );
+		Serial.print ( "; Blau - " );
+		Serial.print ( mydata.weiss1 );
+		Serial.println ( ";" );
+//	}
+
+	ET.sendData ();
+}
 
